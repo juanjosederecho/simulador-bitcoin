@@ -1,80 +1,114 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Simulador Bitcoin – Aula EPT</title>
 <style>
-:root{--bg:#f6f3ff;--card:#fff;--ink:#2d2a4a;--mut:#7a7699;--up:#2bb673;--dn:#ef5b6b;--pri:#8b7cf6;--pas:#ffe7c2}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,#f6f3ff,#e9f7f3);color:var(--ink)}
-.wrap{max-width:560px;margin:auto;padding:10px}
-.card{background:var(--card);border-radius:18px;padding:12px;margin:10px 0;box-shadow:0 4px 14px #8b7cf622}
+:root{--bg1:#f6f3ff;--bg2:#e9f7f3;--card:#fff;--ink:#2d2a4a;--mut:#7a7699;--box:#f7f6fd;--line:#eee;--up:#1fa463;--dn:#e5485a;--pri:#8b7cf6;--pas:#ffe7c2;--chip:#eee9ff;--in:#e3defa}
+body.dark{--bg1:#16151f;--bg2:#1b2226;--card:#232233;--ink:#ecebf7;--mut:#a29fc0;--box:#2c2b40;--line:#34334a;--up:#3ddc8c;--dn:#ff6b7c;--pas:#4a3b1f;--chip:#34325a;--in:#454366}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,var(--bg1),var(--bg2));color:var(--ink);min-height:100vh;transition:background .3s}
+.wrap{max-width:560px;margin:auto;padding:10px}.card{background:var(--card);border-radius:18px;padding:12px;margin:10px 0;box-shadow:0 4px 14px #8b7cf622}
 .demo{background:var(--pas);border-radius:12px;padding:6px 10px;font-size:13px;text-align:center}
 h1{font-size:19px;margin:4px 0}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.price{font-size:32px;font-weight:800}.up{color:var(--up)}.dn{color:var(--dn)}.mut{color:var(--mut);font-size:12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.box{background:#f7f6fd;border-radius:12px;padding:8px}.box b{display:block;font-size:16px}
-button{border:0;border-radius:12px;padding:10px 12px;font-weight:700;font-size:15px;cursor:pointer}
-.buy{background:#c9f2dd;color:#167a4b}.sell{background:#ffd5da;color:#b3263a}.tf{background:#eee9ff;color:var(--ink);padding:6px 10px}.tf.on{background:var(--pri);color:#fff}
-.pct{background:#eef;padding:6px 10px;font-size:13px}input{border:2px solid #e3defa;border-radius:12px;padding:10px;font-size:16px;width:100%}
-canvas{width:100%;height:220px;display:block}table{width:100%;font-size:12px;border-collapse:collapse}td,th{padding:4px;border-bottom:1px solid #eee;text-align:left}
+.price{font-size:30px;font-weight:800}.up{color:var(--up)}.dn{color:var(--dn)}.mut{color:var(--mut);font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.box{background:var(--box);border-radius:12px;padding:8px}.box b{display:block;font-size:16px}
+button,select{border:0;border-radius:12px;padding:10px 12px;font-weight:700;font-size:15px;cursor:pointer;color:var(--ink)}
+.buy{background:#c9f2dd;color:#167a4b}.sell{background:#ffd5da;color:#b3263a}.tf{background:var(--chip);padding:6px 9px;font-size:13px}.tf.on{background:var(--pri);color:#fff}
+.pct{background:var(--chip);padding:6px 10px;font-size:13px}input,select{border:2px solid var(--in);border-radius:12px;padding:10px;font-size:16px;width:100%;background:var(--card);color:var(--ink)}
+canvas{width:100%;height:220px;display:block}table{width:100%;font-size:12px;border-collapse:collapse}td,th{padding:4px;border-bottom:1px solid var(--line);text-align:left}
 .tip{font-size:14px;line-height:1.4}#dot{width:9px;height:9px;border-radius:50%;background:#ccc;display:inline-block}
+.banner{border-radius:14px;padding:10px;text-align:center;font-weight:900;font-size:20px;color:#fff;margin-bottom:8px}
+.banner.win{background:linear-gradient(90deg,#1fa463,#3ddc8c)}.banner.lose{background:linear-gradient(90deg,#e5485a,#ff8a5c)}.banner.flat{background:#9b97b8}
+.bigpl{font-size:28px;font-weight:900;text-align:center;margin:4px 0}.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.chips button{background:var(--chip);padding:5px 9px;font-size:13px}
+#mode{background:var(--chip);padding:6px 10px}
 </style></head><body><div class="wrap">
 <div class="demo">⚠️ Dinero de DEMOSTRACIÓN, no es real. Solo para aprender.</div>
-<div class="card"><div class="row" style="justify-content:space-between"><h1>₿ Simulador Bitcoin</h1><span class="mut"><span id="dot"></span> <span id="src">conectando…</span></span></div>
+<div class="card"><div class="row" style="justify-content:space-between"><h1>₿ Simulador Bitcoin</h1><div class="row"><span class="mut"><span id="dot"></span> <span id="src">conectando…</span></span><button id="mode" title="Modo oscuro">🌙</button></div></div>
 <div class="row"><div class="price" id="price">—</div><div id="chg" class="mut"></div></div>
-<div class="row" style="margin-top:6px"><button class="tf on" data-tf="1m">1m</button><button class="tf" data-tf="5m">5m</button><button class="tf" data-tf="1h">1h</button></div>
-<canvas id="cv"></canvas></div>
-<div class="card" id="login"><b>¿Cómo te llamas?</b><div class="row" style="margin-top:6px"><input id="nm" placeholder="Tu nombre"><button class="buy" id="go">Empezar con $1,000</button></div></div>
+<div class="row" style="margin-top:6px" id="tfs"></div><canvas id="cv"></canvas></div>
+<div class="card" id="login"><b>¿Cómo te llamas?</b><div class="mut">Tu cuenta se guarda con tu nombre: puedes volver otro día o entrar desde otro celular.</div>
+<div class="row" style="margin-top:6px"><input id="nm" placeholder="Tu nombre y apellido"><button class="buy" id="go" style="width:100%">Entrar</button></div>
+<div class="chips" id="profiles"></div>
+<div id="setup" style="display:none;margin-top:10px"><b>Cuenta nueva: elige tu capital inicial</b>
+<div class="row" style="margin-top:6px"><select id="cur" style="flex:1"><option value="USD">Dólares (USD $)</option><option value="PEN">Soles (PEN S/)</option></select><input id="cap" type="number" min="1" max="100000" value="1000" style="flex:1"></div>
+<div class="mut" id="fxinfo"></div><button class="buy" id="create" style="width:100%;margin-top:6px">Crear mi cuenta</button></div>
+<div class="mut" id="lmsg" style="margin-top:6px"></div></div>
 <div class="card" id="panel" style="display:none">
-<div class="row" style="justify-content:space-between"><b id="who"></b><button class="tf" id="reset">Reiniciar</button></div>
-<div class="grid" style="margin-top:8px">
-<div class="box"><span class="mut">Saldo USDT</span><b id="usd"></b></div><div class="box"><span class="mut">BTC que tienes</span><b id="btc"></b></div>
-<div class="box"><span class="mut">Precio promedio de compra</span><b id="avg"></b></div><div class="box"><span class="mut">Ganancia/Pérdida</span><b id="pl"></b></div>
-<div class="box" style="grid-column:span 2"><span class="mut">Patrimonio total (empezaste con $1,000)</span><b id="eq"></b></div></div>
-<div style="margin-top:10px"><input id="amt" type="number" min="0" placeholder="Monto en USDT"></div>
+<div class="row" style="justify-content:space-between"><b id="who"></b><div class="row"><button class="tf" id="out">Cambiar alumno</button><button class="tf" id="reset">Reiniciar</button></div></div>
+<div class="mut" id="sync"></div>
+<div style="margin-top:8px"><div id="ban" class="banner flat">Aún no inviertes</div><div class="bigpl" id="big"></div></div>
+<div class="grid"><div class="box"><span class="mut">Saldo disponible</span><b id="usd"></b></div><div class="box"><span class="mut">BTC que tienes</span><b id="btc"></b></div>
+<div class="box"><span class="mut">Precio promedio de compra</span><b id="avg"></b></div><div class="box"><span class="mut">Ganancia/Pérdida de tu BTC</span><b id="pl"></b></div>
+<div class="box" style="grid-column:span 2"><span class="mut" id="eql"></span><b id="eq"></b></div></div>
+<div style="margin-top:10px"><input id="amt" type="number" min="0" placeholder="Monto"></div>
 <div class="row" style="margin-top:6px"><button class="pct" data-p="25">25%</button><button class="pct" data-p="50">50%</button><button class="pct" data-p="75">75%</button><button class="pct" data-p="100">100%</button><span class="mut">(% de tu saldo al comprar / de tu BTC al vender)</span></div>
 <div class="row" style="margin-top:8px"><button class="buy" id="bb" style="flex:1">Comprar</button><button class="sell" id="bs" style="flex:1">Vender</button></div>
 <div id="msg" class="mut" style="margin-top:6px"></div></div>
-<div class="card"><b>Historial</b><table><thead><tr><th>Hora</th><th>Tipo</th><th>Precio</th><th>BTC</th><th>USDT</th></tr></thead><tbody id="hist"></tbody></table></div>
-<div class="card tip"><b>💡 Consejos para aprender</b>
-<p id="tipx"></p><ul><li><b>Compra</b> cuando tengas un plan, no por emoción. Muchos esperan una bajada para comprar.</li>
-<li><b>Vende</b> cuando llegues a tu meta de ganancia o a tu límite de pérdida (stop).</li>
-<li><b>Riesgo:</b> nunca pongas todo en una sola operación; prueba con 25%.</li>
-<li>El precio cambia cada segundo: ganar o perder es normal. Anota por qué compraste.</li>
-<li>En la vida real existen comisiones y estafas. Esto es solo práctica.</li></ul></div>
-<p class="mut" style="text-align:center">Datos de precio públicos en vivo · Simulador educativo · Profesor Juan – I.E. Rosaspata</p>
-</div><script>
-const $=id=>document.getElementById(id);const K='btcsim_v1';let S=JSON.parse(localStorage.getItem(K)||'null');
-let price=0,open24=0,tf='1m',candles=[],ws=null,lastWs=0;
-const f$=v=>'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+<div class="card"><b>Historial</b><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Precio</th><th>BTC</th><th>Monto</th></tr></thead><tbody id="hist"></tbody></table></div>
+<div class="card"><div class="row" style="justify-content:space-between"><b>🏆 Ranking de la clase</b><button class="tf" id="rk">Actualizar</button></div><table><tbody id="rank"><tr><td class="mut">Toca Actualizar</td></tr></tbody></table></div>
+<div class="card tip"><b>💡 Consejos para aprender</b><p id="tipx"></p><ul><li><b>Compra</b> cuando tengas un plan, no por emoción. Muchos esperan una bajada para comprar.</li>
+<li><b>Vende</b> cuando llegues a tu meta de ganancia o a tu límite de pérdida (stop).</li><li><b>Riesgo:</b> nunca pongas todo en una sola operación; prueba con 25%.</li>
+<li>El precio cambia cada segundo: ganar o perder es normal. Anota por qué compraste.</li><li>En la vida real existen comisiones y estafas. Esto es solo práctica.</li></ul></div>
+<p class="mut" style="text-align:center">Datos de precio públicos en vivo · Simulador educativo · Profesor Juan – I.E. Rosaspata</p></div>
+<script>
+const API='https://simulador-btc-api.educaredmovil.workers.dev';const $=id=>document.getElementById(id);
+const norm=n=>n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
+const LS=k=>'btcsim2_'+k;let S=null,price=0,open24=0,tf=localStorage.getItem('btcsim_tf')||'1m',candles=[],ws=null,lastWs=0,fxLive=3.75;
+const cur=()=>S&&S.cur==='PEN'?{s:'S/ ',r:S.fx}:{s:'$',r:1};
+const fm=(usd,c=cur())=>c.s+(usd*c.r).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const REST=['https://data-api.binance.vision','https://api.binance.com'];
-async function rest(path){for(const h of REST){try{const r=await fetch(h+path);if(r.ok)return await r.json()}catch(e){}}throw 0}
-function save(){localStorage.setItem(K,JSON.stringify(S))}
+async function rest(p){for(const h of REST){try{const r=await fetch(h+p);if(r.ok)return await r.json()}catch(e){}}throw 0}
+// dark mode
+function setMode(d){document.body.classList.toggle('dark',d);$('mode').textContent=d?'☀️':'🌙';localStorage.setItem('btcsim_dark',d?'1':'0');draw()}
+$('mode').onclick=()=>setMode(!document.body.classList.contains('dark'));
+// fx
+fetch('https://open.er-api.com/v6/latest/USD').then(r=>r.json()).then(d=>{if(d.rates&&d.rates.PEN)fxLive=d.rates.PEN;fxInfo()}).catch(fxInfo);
+function fxInfo(){$('fxinfo').textContent=$('cur').value==='PEN'?`Tipo de cambio hoy: 1 USD = S/ ${fxLive.toFixed(3)}. Máximo 100,000.`:'Máximo 100,000.'}$('cur').onchange=fxInfo;
+// timeframes
+['1m','5m','15m','1h','4h','1d'].forEach(t=>{const b=document.createElement('button');b.className='tf'+(t===tf?' on':'');b.textContent=t;b.dataset.tf=t;b.onclick=()=>{document.querySelectorAll('[data-tf]').forEach(x=>x.classList.remove('on'));b.classList.add('on');tf=t;localStorage.setItem('btcsim_tf',t);loadK();conn()};$('tfs').appendChild(b)});
 async function loadK(){try{const d=await rest(`/api/v3/uiKlines?symbol=BTCUSDT&interval=${tf}&limit=60`);candles=d.map(k=>({t:k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]}));draw()}catch(e){}}
-function conn(){if(ws)ws.close();ws=new WebSocket(`wss://data-stream.binance.vision/stream?streams=btcusdt@aggTrade/btcusdt@kline_${tf}/btcusdt@ticker`);
-ws.onmessage=e=>{const m=JSON.parse(e.data),d=m.data;lastWs=Date.now();if(d.e==='aggTrade')setP(+d.p,'en vivo');
+function conn(){if(ws){ws.onclose=null;ws.close()}ws=new WebSocket(`wss://data-stream.binance.vision/stream?streams=btcusdt@aggTrade/btcusdt@kline_${tf}/btcusdt@ticker`);
+ws.onmessage=e=>{const d=JSON.parse(e.data).data;lastWs=Date.now();if(d.e==='aggTrade')setP(+d.p,'en vivo');
 else if(d.e==='kline'){const k=d.k,c={t:k.t,o:+k.o,h:+k.h,l:+k.l,c:+k.c};const L=candles[candles.length-1];if(L&&L.t===c.t)candles[candles.length-1]=c;else{candles.push(c);if(candles.length>60)candles.shift()}draw()}
-else if(d.e==='24hrTicker')open24=+d.o};ws.onclose=()=>setTimeout(()=>{if(ws.readyState>1)conn()},3000)}
+else if(d.e==='24hrTicker')open24=+d.o};ws.onclose=()=>setTimeout(conn,3000)}
 setInterval(async()=>{if(Date.now()-lastWs>5000){try{const d=await rest('/api/v3/ticker/24hr?symbol=BTCUSDT');open24=+d.openPrice;setP(+d.lastPrice,'respaldo REST');const L=candles[candles.length-1];if(L){L.c=price;L.h=Math.max(L.h,price);L.l=Math.min(L.l,price);draw()}}catch(e){$('src').textContent='sin conexión'}}},3000);
-let prev=0;function setP(p,src){prev=price;price=p;const el=$('price');el.textContent=f$(p);el.className='price '+(p>=prev?'up':'dn');$('src').textContent=src;$('dot').style.background=src==='en vivo'?'#2bb673':'#f5a623';
-if(open24){const c=(p-open24)/open24*100;$('chg').innerHTML=`<span class="${c>=0?'up':'dn'}">${c>=0?'+':''}${c.toFixed(2)}% 24h</span>`}ui()}
-function draw(){const cv=$('cv'),r=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;cv.width=W*r;cv.height=H*r;const g=cv.getContext('2d');g.scale(r,r);g.clearRect(0,0,W,H);if(!candles.length)return;
-const hi=Math.max(...candles.map(c=>c.h)),lo=Math.min(...candles.map(c=>c.l)),pad=58,y=v=>8+(hi-v)/(hi-lo||1)*(H-16),w=(W-pad)/candles.length;
-g.font='10px sans-serif';g.fillStyle='#7a7699';for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4;g.fillText(Math.round(v).toLocaleString('en-US'),W-pad+4,y(v)+3);g.strokeStyle='#eee';g.beginPath();g.moveTo(0,y(v));g.lineTo(W-pad,y(v));g.stroke()}
-candles.forEach((c,i)=>{const x=i*w+w/2,col=c.c>=c.o?'#2bb673':'#ef5b6b';g.strokeStyle=g.fillStyle=col;g.beginPath();g.moveTo(x,y(c.h));g.lineTo(x,y(c.l));g.stroke();g.fillRect(x-w*.35,Math.min(y(c.o),y(c.c)),w*.7,Math.max(1,Math.abs(y(c.o)-y(c.c))))});
-if(S&&S.btc>0){g.strokeStyle='#8b7cf6';g.setLineDash([4,3]);g.beginPath();g.moveTo(0,y(S.avg));g.lineTo(W-pad,y(S.avg));g.stroke();g.setLineDash([])}}
-function ui(){if(!S){$('login').style.display='';$('panel').style.display='none';return}$('login').style.display='none';$('panel').style.display='';
-$('who').textContent='👤 '+S.name;$('usd').textContent=f$(S.usd);$('btc').textContent=S.btc.toFixed(6);$('avg').textContent=S.btc>0?f$(S.avg):'—';
-const pl=S.btc*(price-S.avg),pp=S.avg?(price-S.avg)/S.avg*100:0;$('pl').innerHTML=S.btc>0&&price?`<span class="${pl>=0?'up':'dn'}">${pl>=0?'+':''}${f$(pl)} (${pp.toFixed(2)}%)</span>`:'—';
-const eq=S.usd+S.btc*price,d=eq-1000;$('eq').innerHTML=`${f$(eq)} <span class="${d>=0?'up':'dn'}">(${d>=0?'+':''}${f$(d)})</span>`;
-$('hist').innerHTML=S.h.slice().reverse().map(t=>`<tr><td>${t.t}</td><td class="${t.k==='Compra'?'up':'dn'}">${t.k}</td><td>${f$(t.p)}</td><td>${t.b.toFixed(6)}</td><td>${f$(t.u)}</td></tr>`).join('')}
-let side=null,pctSel=0;document.querySelectorAll('.pct').forEach(b=>b.onclick=()=>{pctSel=+b.dataset.p;$('amt').value=(S.usd*pctSel/100).toFixed(2);$('msg').textContent=`${pctSel}% elegido: al comprar usa ${pctSel}% de tu saldo; al vender, ${pctSel}% de tu BTC.`});
+let prev=0;function setP(p,src){prev=price;price=p;const el=$('price');el.textContent=fm(p);el.className='price '+(p>=prev?'up':'dn');$('src').textContent=src;$('dot').style.background=src==='en vivo'?'#2bb673':'#f5a623';
+if(open24){const c=(p-open24)/open24*100;$('chg').innerHTML=`<span class="${c>=0?'up':'dn'}">${c>=0?'▲ +':'▼ '}${c.toFixed(2)}% 24h</span>`}ui()}
+function draw(){const cv=$('cv'),r=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;cv.width=W*r;cv.height=H*r;const g=cv.getContext('2d');g.scale(r,r);if(!candles.length)return;
+const dk=document.body.classList.contains('dark'),cr=cur().r,hi=Math.max(...candles.map(c=>c.h)),lo=Math.min(...candles.map(c=>c.l)),pad=62,y=v=>8+(hi-v)/(hi-lo||1)*(H-16),w=(W-pad)/candles.length;
+g.font='10px sans-serif';for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4;g.fillStyle=dk?'#a29fc0':'#7a7699';g.fillText(Math.round(v*cr).toLocaleString('en-US'),W-pad+4,y(v)+3);g.strokeStyle=dk?'#34334a':'#eee';g.beginPath();g.moveTo(0,y(v));g.lineTo(W-pad,y(v));g.stroke()}
+candles.forEach((c,i)=>{const x=i*w+w/2,col=c.c>=c.o?(dk?'#3ddc8c':'#2bb673'):(dk?'#ff6b7c':'#ef5b6b');g.strokeStyle=g.fillStyle=col;g.beginPath();g.moveTo(x,y(c.h));g.lineTo(x,y(c.l));g.stroke();g.fillRect(x-w*.35,Math.min(y(c.o),y(c.c)),w*.7,Math.max(1,Math.abs(y(c.o)-y(c.c))))});
+if(S&&S.btc>0&&S.avg<=hi&&S.avg>=lo){g.strokeStyle='#8b7cf6';g.setLineDash([4,3]);g.beginPath();g.moveTo(0,y(S.avg));g.lineTo(W-pad,y(S.avg));g.stroke();g.setLineDash([])}}
+// accounts
+function profiles(){return JSON.parse(localStorage.getItem(LS('profiles'))||'[]')}
+function showProfiles(){$('profiles').innerHTML=profiles().map(p=>`<button data-n="${p.replace(/"/g,'')}">👤 ${p}</button>`).join('');$('profiles').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('nm').value=b.dataset.n;enter()})}
+let pending=null;
+function save(){if(!S)return;S.updated=Date.now();const k=norm(S.name);localStorage.setItem(LS('acc_'+k),JSON.stringify(S));const p=profiles().filter(x=>norm(x)!==k);p.unshift(S.name);localStorage.setItem(LS('profiles'),JSON.stringify(p.slice(0,12)));
+clearTimeout(pending);pending=setTimeout(push,800)}
+async function push(){if(!S)return;const eq=S.usd+S.btc*(price||S.avg);try{const r=await fetch(API+'/account',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:S.name,data:S,pct:(eq-S.start)/S.start*100})});$('sync').textContent=r.ok?'☁️ Guardado en la nube':'💾 Guardado solo en este equipo'}catch(e){$('sync').textContent='💾 Guardado solo en este equipo (sin conexión)'}}
+async function enter(){const n=$('nm').value.trim();if(!n)return;const k=norm(n);$('lmsg').textContent='Buscando tu cuenta…';let cloud=null,ok=false;
+try{const r=await fetch(API+'/account?name='+encodeURIComponent(k));if(r.ok){cloud=(await r.json()).account;ok=true}}catch(e){}
+const local=JSON.parse(localStorage.getItem(LS('acc_'+k))||'null');let a=cloud&&local?((local.updated||0)>(cloud.updated||0)?local:cloud):(cloud||local);
+if(a){S=a;$('lmsg').textContent='';save();ui();draw()}else{$('setup').style.display='';$('lmsg').textContent=(ok?'':'(Sin conexión a la nube) ')+'No encontré una cuenta con ese nombre. Créala:';fxInfo()}}
+$('go').onclick=enter;$('nm').onkeydown=e=>{if(e.key==='Enter')enter()};
+$('create').onclick=()=>{const n=$('nm').value.trim(),c=$('cur').value,v=Math.min(100000,Math.max(1,+$('cap').value||0));if(!n)return;const fx=c==='PEN'?fxLive:1,usd=v/fx;
+S={name:n,cur:c,fx,start:usd,usd,btc:0,avg:0,h:[],created:Date.now()};$('setup').style.display='none';$('lmsg').textContent='';save();ui();draw()};
+$('out').onclick=()=>{S=null;$('nm').value='';$('setup').style.display='none';ui();draw()};
+$('reset').onclick=()=>{if(confirm('¿Reiniciar tu cuenta y volver al capital inicial?')){S.usd=S.start;S.btc=0;S.avg=0;S.h=[];save();ui();draw()}};
+function ui(){if(!S){$('login').style.display='';$('panel').style.display='none';showProfiles();$('hist').innerHTML='';return}$('login').style.display='none';$('panel').style.display='';
+$('who').textContent='👤 '+S.name;$('usd').textContent=fm(S.usd);$('btc').textContent=S.btc.toFixed(6);$('avg').textContent=S.btc>0?fm(S.avg):'—';$('amt').placeholder='Monto en '+(S.cur==='PEN'?'soles (S/)':'dólares ($)');
+const pl=S.btc*(price-S.avg),pp=S.avg?(price-S.avg)/S.avg*100:0;$('pl').innerHTML=S.btc>0&&price?`<span class="${pl>=0?'up':'dn'}">${pl>=0?'▲ +':'▼ −'}${fm(Math.abs(pl))} (${pp.toFixed(2)}%)</span>`:'—';
+const eq=S.usd+S.btc*(price||S.avg),d=eq-S.start,dp=d/S.start*100;$('eql').textContent=`Patrimonio total (empezaste con ${fm(S.start)})`;$('eq').innerHTML=`${fm(eq)} <span class="${d>=0?'up':'dn'}">(${d>=0?'+':'−'}${fm(Math.abs(d))})</span>`;
+const b=$('ban'),bg=$('big');if(!price||Math.abs(d)<S.start*1e-6){b.className='banner flat';b.textContent=S.h.length?'Estás en EMPATE':'Aún no inviertes';bg.textContent='';}
+else if(d>0){b.className='banner win';b.textContent='🚀 ¡Estás GANANDO!';bg.innerHTML=`<span class="up">▲ +${fm(d)} (+${dp.toFixed(2)}%)</span>`}
+else{b.className='banner lose';b.textContent='📉 Estás PERDIENDO';bg.innerHTML=`<span class="dn">▼ −${fm(-d)} (${dp.toFixed(2)}%)</span>`}
+$('hist').innerHTML=S.h.slice().reverse().map(t=>`<tr><td>${t.t}</td><td class="${t.k==='Compra'?'up':'dn'}">${t.k}</td><td>${fm(t.p)}</td><td>${t.b.toFixed(6)}</td><td>${fm(t.u)}</td></tr>`).join('')}
+let pctSel=0;document.querySelectorAll('.pct').forEach(b=>b.onclick=()=>{pctSel=+b.dataset.p;$('amt').value=(S.usd*cur().r*pctSel/100).toFixed(2);$('msg').textContent=`${pctSel}% elegido: al comprar usa ${pctSel}% de tu saldo; al vender, ${pctSel}% de tu BTC.`});
 $('amt').oninput=()=>pctSel=0;
-function trade(buy){if(!price)return msg('Esperando precio…');const now=new Date().toLocaleTimeString('es-PE',{hour:'numeric',minute:'2-digit',hour12:true});
-if(buy){let u=pctSel?S.usd*pctSel/100:+$('amt').value;if(!(u>0)||u>S.usd+1e-9)return msg('Monto no válido o saldo insuficiente.');const b=u/price;S.avg=(S.avg*S.btc+u)/(S.btc+b);S.btc+=b;S.usd-=u;S.h.push({t:now,k:'Compra',p:price,b,u});msg(`Compraste ${b.toFixed(6)} BTC.`)}
-else{let b=pctSel?S.btc*pctSel/100:(+$('amt').value)/price;if(!(b>0)||b>S.btc+1e-12)return msg('No tienes suficiente BTC.');b=Math.min(b,S.btc);const u=b*price,g=(price-S.avg)*b;S.btc-=b;S.usd+=u;if(S.btc<1e-10){S.btc=0;S.avg=0}S.h.push({t:now,k:'Venta',p:price,b,u});msg(`Vendiste ${b.toFixed(6)} BTC: ${g>=0?'ganaste':'perdiste'} ${f$(Math.abs(g))}.`)}
+function trade(buy){if(!price)return msg('Esperando precio…');const now=new Date().toLocaleString('es-PE',{day:'2-digit',month:'2-digit',hour:'numeric',minute:'2-digit',hour12:true});const r=cur().r;
+if(buy){let u=pctSel?S.usd*pctSel/100:(+$('amt').value)/r;if(!(u>0)||u>S.usd+1e-9)return msg('Monto no válido o saldo insuficiente.');u=Math.min(u,S.usd);const b=u/price;S.avg=(S.avg*S.btc+u)/(S.btc+b);S.btc+=b;S.usd-=u;S.h.push({t:now,k:'Compra',p:price,b,u});msg(`Compraste ${b.toFixed(6)} BTC.`)}
+else{let b=pctSel?S.btc*pctSel/100:(+$('amt').value)/r/price;if(!(b>0)||b>S.btc+1e-12)return msg('No tienes suficiente BTC.');b=Math.min(b,S.btc);const u=b*price,g=(price-S.avg)*b;S.btc-=b;S.usd+=u;if(S.btc<1e-10){S.btc=0;S.avg=0}S.h.push({t:now,k:'Venta',p:price,b,u});msg(`Vendiste ${b.toFixed(6)} BTC: ${g>=0?'ganaste':'perdiste'} ${fm(Math.abs(g))}.`)}
 save();ui();draw()}
-function msg(t){$('msg').textContent=t}
-$('bb').onclick=()=>trade(1);$('bs').onclick=()=>trade(0);
-$('go').onclick=()=>{const n=$('nm').value.trim();if(!n)return;S={name:n,usd:1000,btc:0,avg:0,h:[]};save();ui()};
-$('reset').onclick=()=>{if(confirm('¿Reiniciar y volver a $1,000?')){localStorage.removeItem(K);S=null;ui();draw()}};
-document.querySelectorAll('[data-tf]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tf]').forEach(x=>x.classList.remove('on'));b.classList.add('on');tf=b.dataset.tf;loadK();conn()});
+function msg(t){$('msg').textContent=t}$('bb').onclick=()=>trade(1);$('bs').onclick=()=>trade(0);
+$('rk').onclick=async()=>{try{const d=await (await fetch(API+'/ranking')).json();$('rank').innerHTML=d.ranking.map((x,i)=>`<tr><td>${['🥇','🥈','🥉'][i]||i+1}</td><td>${x.display.replace(/</g,'')}</td><td class="${x.pct>=0?'up':'dn'}">${x.pct>=0?'▲ +':'▼ '}${x.pct.toFixed(2)}%</td></tr>`).join('')||'<tr><td class="mut">Nadie todavía</td></tr>'}catch(e){$('rank').innerHTML='<tr><td class="mut">Sin conexión</td></tr>'}};
+setInterval(()=>{if(S&&price)push()},60000);
 const tips=['Antes de comprar, decide: ¿a qué precio venderé si gano? ¿y si pierdo?','Una vela verde = el precio subió en ese tiempo; roja = bajó.','La línea morada punteada es tu precio promedio de compra.','Diversificar y no arriesgar todo es la regla #1.'];let ti=0;setInterval(()=>$('tipx').textContent='📌 '+tips[ti++%tips.length],6000);$('tipx').textContent='📌 '+tips[3];
-onresize=draw;ui();loadK();conn();
+setMode(localStorage.getItem('btcsim_dark')==='1');onresize=draw;ui();loadK();conn();
 </script></body></html>
