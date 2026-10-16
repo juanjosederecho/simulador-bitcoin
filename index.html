@@ -112,7 +112,7 @@ S={name:n,cur:c,fx,start:usd,usd,btc:0,avg:0,h:[],created:Date.now()};$('setup')
 $('out').onclick=()=>{S=null;$('nm').value='';$('setup').style.display='none';ui();draw()};
 
 function ui(){if(!S){$('login').style.display='';$('panel').style.display='none';$('bar').style.display='none';$('banwrap').style.display='none';showProfiles();$('hist').innerHTML='';return}$('login').style.display='none';$('panel').style.display='';$('bar').style.display='';$('banwrap').style.display='';
-$('who').textContent='👤 '+S.name;$('fees').textContent=fm(S.fees||0);$('usd').textContent=fm(S.usd);$('btc').textContent=S.btc.toFixed(6);$('avg').textContent=S.btc>0?fm(S.avg):'—';$('amt').placeholder='Monto en '+(S.cur==='PEN'?'soles (S/)':'dólares ($)')+' para comprar o vender';
+$('who').textContent='👤 '+S.name;$('fees').textContent=fm(S.fees||0);$('usd').textContent=fm(S.usd);$('btc').textContent=S.btc.toFixed(6);$('avg').textContent=S.btc>0?fm(S.avg):'—';$('amt').placeholder='Monto en '+(S.cur==='PEN'?'S/':'$');
 const pl=S.btc*(price*(1-FEE)-S.avg),pp=S.avg?(price*(1-FEE)-S.avg)/S.avg*100:0;$('pl').innerHTML=S.btc>0&&price?`<span class="${pl>=0?'up':'dn'}">${pl>=0?'▲ +':'▼ −'}${fm(Math.abs(pl))} (${pp.toFixed(2)}%)</span>`:'—';
 const eq=S.usd+S.btc*(price||S.avg),d=eq-S.start,dp=d/S.start*100;$('eql').textContent=`Patrimonio total (empezaste con ${fm(S.start)})`;$('eq').innerHTML=`${fm(eq)} <span class="${d>=0?'up':'dn'}">(${d>=0?'+':'−'}${fm(Math.abs(d))})</span>`;
 const b=$('ban'),bg=$('big'),an=$('animal');an.className='animal';an.textContent='';if(!price||Math.abs(d)<S.start*1e-6){b.className='banner flat';b.textContent=S.h.length?'Estás en EMPATE':'Aún no inviertes';bg.textContent='';}
