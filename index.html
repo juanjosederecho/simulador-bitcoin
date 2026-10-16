@@ -1,6 +1,8 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Simulador Bitcoin – Aula EPT</title>
-<style>
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#8b7cf6"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Simulador Bitcoin – Aula EPT</title><style>
 :root{--bg1:#f6f3ff;--bg2:#e9f7f3;--card:#fff;--ink:#2d2a4a;--mut:#7a7699;--box:#f7f6fd;--line:#eee;--up:#1fa463;--dn:#e5485a;--pri:#8b7cf6;--pas:#ffe7c2;--chip:#eee9ff;--in:#e3defa}
 body.dark{--bg1:#16151f;--bg2:#1b2226;--card:#232233;--ink:#ecebf7;--mut:#a29fc0;--box:#2c2b40;--line:#34334a;--up:#3ddc8c;--dn:#ff6b7c;--pas:#4a3b1f;--chip:#34325a;--in:#454366}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,var(--bg1),var(--bg2));color:var(--ink);min-height:100vh;transition:background .3s}
@@ -18,35 +20,47 @@ canvas{width:100%;height:220px;display:block}table{width:100%;font-size:12px;bor
 .banner.win{background:linear-gradient(90deg,#1fa463,#3ddc8c)}.banner.lose{background:linear-gradient(90deg,#e5485a,#ff8a5c)}.banner.flat{background:#9b97b8}
 .bigpl{font-size:28px;font-weight:900;text-align:center;margin:4px 0}.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.chips button{background:var(--chip);padding:5px 9px;font-size:13px}
 #mode{background:var(--chip);padding:6px 10px}
+
+html,body{overflow-x:clip;width:100%}body{min-height:100dvh;padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+.wrap{max-width:640px;padding:0}.card{border-radius:0;margin:0 0 6px;box-shadow:none;padding:10px 12px}
+.top{position:sticky;top:0;z-index:5;background:var(--card);padding:calc(6px + env(safe-area-inset-top)) 12px 6px;border-bottom:1px solid var(--line)}
+.top h1{font-size:15px;margin:0}.price{font-size:26px}.demo{border-radius:0;font-size:11px;padding:3px}
+.banner{font-size:15px;padding:6px;margin:6px 0 0;border-radius:10px}.bigpl{font-size:20px;margin:2px 0 0}
+canvas{height:calc(100dvh - 330px);min-height:200px;max-height:460px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 14px #0002}
+.bar .in{max-width:640px;margin:auto}.bar .row{flex-wrap:nowrap}.bar input{padding:8px;font-size:16px}.pct{flex:1;padding:6px 0}
+details{background:var(--card);margin:0 0 6px;padding:10px 12px}summary{font-weight:700;cursor:pointer}
+.grid .box b{font-size:15px}td,th{word-break:break-word}
+@media(max-width:380px){.price{font-size:22px}.tf{padding:5px 7px;font-size:12px}button{font-size:14px}}
 </style></head><body><div class="wrap">
+<div class="top"><div class="row" style="justify-content:space-between"><h1>₿ Simulador Bitcoin</h1><div class="row"><span class="mut"><span id="dot"></span> <span id="src">conectando…</span></span><button id="mode" title="Modo oscuro">🌙</button></div></div>
+<div class="row" style="justify-content:space-between"><div class="price" id="price">—</div><div id="chg" class="mut"></div></div>
+<div id="banwrap" style="display:none"><div id="ban" class="banner flat">Aún no inviertes</div><div class="bigpl" id="big"></div></div></div>
 <div class="demo">⚠️ Dinero de DEMOSTRACIÓN, no es real. Solo para aprender.</div>
-<div class="card"><div class="row" style="justify-content:space-between"><h1>₿ Simulador Bitcoin</h1><div class="row"><span class="mut"><span id="dot"></span> <span id="src">conectando…</span></span><button id="mode" title="Modo oscuro">🌙</button></div></div>
-<div class="row"><div class="price" id="price">—</div><div id="chg" class="mut"></div></div>
-<div class="row" style="margin-top:6px" id="tfs"></div><canvas id="cv"></canvas></div>
+<div class="card"><div class="row" id="tfs"></div><canvas id="cv"></canvas></div>
 <div class="card" id="login"><b>¿Cómo te llamas?</b><div class="mut">Tu cuenta se guarda con tu nombre: puedes volver otro día o entrar desde otro celular.</div>
 <div class="row" style="margin-top:6px"><input id="nm" placeholder="Tu nombre y apellido"><button class="buy" id="go" style="width:100%">Entrar</button></div>
 <div class="chips" id="profiles"></div>
 <div id="setup" style="display:none;margin-top:10px"><b>Cuenta nueva: elige tu capital inicial</b>
-<div class="row" style="margin-top:6px"><select id="cur" style="flex:1"><option value="USD">Dólares (USD $)</option><option value="PEN">Soles (PEN S/)</option></select><input id="cap" type="number" min="1" max="100000" value="1000" style="flex:1"></div>
+<div class="row" style="margin-top:6px;flex-wrap:nowrap"><select id="cur" style="flex:1"><option value="USD">Dólares ($)</option><option value="PEN">Soles (S/)</option></select><input id="cap" type="number" min="1" max="100000" value="1000" style="flex:1"></div>
 <div class="mut" id="fxinfo"></div><button class="buy" id="create" style="width:100%;margin-top:6px">Crear mi cuenta</button></div>
 <div class="mut" id="lmsg" style="margin-top:6px"></div></div>
 <div class="card" id="panel" style="display:none">
 <div class="row" style="justify-content:space-between"><b id="who"></b><div class="row"><button class="tf" id="out">Cambiar alumno</button><button class="tf" id="reset">Reiniciar</button></div></div>
 <div class="mut" id="sync"></div>
-<div style="margin-top:8px"><div id="ban" class="banner flat">Aún no inviertes</div><div class="bigpl" id="big"></div></div>
-<div class="grid"><div class="box"><span class="mut">Saldo disponible</span><b id="usd"></b></div><div class="box"><span class="mut">BTC que tienes</span><b id="btc"></b></div>
-<div class="box"><span class="mut">Precio promedio de compra</span><b id="avg"></b></div><div class="box"><span class="mut">Ganancia/Pérdida de tu BTC</span><b id="pl"></b></div>
+<div class="grid" style="margin-top:6px"><div class="box"><span class="mut">Saldo disponible</span><b id="usd"></b></div><div class="box"><span class="mut">BTC que tienes</span><b id="btc"></b></div>
+<div class="box"><span class="mut">Precio promedio</span><b id="avg"></b></div><div class="box"><span class="mut">G/P de tu BTC</span><b id="pl"></b></div>
 <div class="box" style="grid-column:span 2"><span class="mut" id="eql"></span><b id="eq"></b></div></div>
-<div style="margin-top:10px"><input id="amt" type="number" min="0" placeholder="Monto"></div>
-<div class="row" style="margin-top:6px"><button class="pct" data-p="25">25%</button><button class="pct" data-p="50">50%</button><button class="pct" data-p="75">75%</button><button class="pct" data-p="100">100%</button><span class="mut">(% de tu saldo al comprar / de tu BTC al vender)</span></div>
-<div class="row" style="margin-top:8px"><button class="buy" id="bb" style="flex:1">Comprar</button><button class="sell" id="bs" style="flex:1">Vender</button></div>
 <div id="msg" class="mut" style="margin-top:6px"></div></div>
-<div class="card"><b>Historial</b><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Precio</th><th>BTC</th><th>Monto</th></tr></thead><tbody id="hist"></tbody></table></div>
-<div class="card"><div class="row" style="justify-content:space-between"><b>🏆 Ranking de la clase</b><button class="tf" id="rk">Actualizar</button></div><table><tbody id="rank"><tr><td class="mut">Toca Actualizar</td></tr></tbody></table></div>
-<div class="card tip"><b>💡 Consejos para aprender</b><p id="tipx"></p><ul><li><b>Compra</b> cuando tengas un plan, no por emoción. Muchos esperan una bajada para comprar.</li>
+<details><summary>📜 Historial</summary><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Precio</th><th>BTC</th><th>Monto</th></tr></thead><tbody id="hist"></tbody></table></details>
+<details id="rkd"><summary>🏆 Ranking de la clase</summary><button class="tf" id="rk" style="margin:6px 0">Actualizar</button><table><tbody id="rank"><tr><td class="mut">Toca Actualizar</td></tr></tbody></table></details>
+<details class="tip"><summary>💡 Consejos para aprender</summary><p id="tipx"></p><ul><li><b>Compra</b> cuando tengas un plan, no por emoción. Muchos esperan una bajada para comprar.</li>
 <li><b>Vende</b> cuando llegues a tu meta de ganancia o a tu límite de pérdida (stop).</li><li><b>Riesgo:</b> nunca pongas todo en una sola operación; prueba con 25%.</li>
-<li>El precio cambia cada segundo: ganar o perder es normal. Anota por qué compraste.</li><li>En la vida real existen comisiones y estafas. Esto es solo práctica.</li></ul></div>
+<li>El precio cambia cada segundo: ganar o perder es normal. Anota por qué compraste.</li><li>En la vida real existen comisiones y estafas. Esto es solo práctica.</li></ul></details>
 <p class="mut" style="text-align:center">Datos de precio públicos en vivo · Simulador educativo · Profesor Juan – I.E. Rosaspata</p></div>
+<div class="bar" id="bar" style="display:none"><div class="in">
+<div class="row"><input id="amt" type="number" min="0" placeholder="Monto" style="flex:2"><button class="pct" data-p="25">25%</button><button class="pct" data-p="50">50%</button><button class="pct" data-p="100">100%</button></div>
+<div class="row" style="margin-top:6px"><button class="buy" id="bb" style="flex:1">▲ Comprar</button><button class="sell" id="bs" style="flex:1">▼ Vender</button></div></div></div>
 <script>
 const API='https://simulador-btc-api.educaredmovil.workers.dev';const $=id=>document.getElementById(id);
 const norm=n=>n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
@@ -92,7 +106,7 @@ $('create').onclick=()=>{const n=$('nm').value.trim(),c=$('cur').value,v=Math.mi
 S={name:n,cur:c,fx,start:usd,usd,btc:0,avg:0,h:[],created:Date.now()};$('setup').style.display='none';$('lmsg').textContent='';save();ui();draw()};
 $('out').onclick=()=>{S=null;$('nm').value='';$('setup').style.display='none';ui();draw()};
 $('reset').onclick=()=>{if(confirm('¿Reiniciar tu cuenta y volver al capital inicial?')){S.usd=S.start;S.btc=0;S.avg=0;S.h=[];save();ui();draw()}};
-function ui(){if(!S){$('login').style.display='';$('panel').style.display='none';showProfiles();$('hist').innerHTML='';return}$('login').style.display='none';$('panel').style.display='';
+function ui(){if(!S){$('login').style.display='';$('panel').style.display='none';$('bar').style.display='none';$('banwrap').style.display='none';showProfiles();$('hist').innerHTML='';return}$('login').style.display='none';$('panel').style.display='';$('bar').style.display='';$('banwrap').style.display='';
 $('who').textContent='👤 '+S.name;$('usd').textContent=fm(S.usd);$('btc').textContent=S.btc.toFixed(6);$('avg').textContent=S.btc>0?fm(S.avg):'—';$('amt').placeholder='Monto en '+(S.cur==='PEN'?'soles (S/)':'dólares ($)');
 const pl=S.btc*(price-S.avg),pp=S.avg?(price-S.avg)/S.avg*100:0;$('pl').innerHTML=S.btc>0&&price?`<span class="${pl>=0?'up':'dn'}">${pl>=0?'▲ +':'▼ −'}${fm(Math.abs(pl))} (${pp.toFixed(2)}%)</span>`:'—';
 const eq=S.usd+S.btc*(price||S.avg),d=eq-S.start,dp=d/S.start*100;$('eql').textContent=`Patrimonio total (empezaste con ${fm(S.start)})`;$('eq').innerHTML=`${fm(eq)} <span class="${d>=0?'up':'dn'}">(${d>=0?'+':'−'}${fm(Math.abs(d))})</span>`;
@@ -107,7 +121,7 @@ if(buy){let u=pctSel?S.usd*pctSel/100:(+$('amt').value)/r;if(!(u>0)||u>S.usd+1e-
 else{let b=pctSel?S.btc*pctSel/100:(+$('amt').value)/r/price;if(!(b>0)||b>S.btc+1e-12)return msg('No tienes suficiente BTC.');b=Math.min(b,S.btc);const u=b*price,g=(price-S.avg)*b;S.btc-=b;S.usd+=u;if(S.btc<1e-10){S.btc=0;S.avg=0}S.h.push({t:now,k:'Venta',p:price,b,u});msg(`Vendiste ${b.toFixed(6)} BTC: ${g>=0?'ganaste':'perdiste'} ${fm(Math.abs(g))}.`)}
 save();ui();draw()}
 function msg(t){$('msg').textContent=t}$('bb').onclick=()=>trade(1);$('bs').onclick=()=>trade(0);
-$('rk').onclick=async()=>{try{const d=await (await fetch(API+'/ranking')).json();$('rank').innerHTML=d.ranking.map((x,i)=>`<tr><td>${['🥇','🥈','🥉'][i]||i+1}</td><td>${x.display.replace(/</g,'')}</td><td class="${x.pct>=0?'up':'dn'}">${x.pct>=0?'▲ +':'▼ '}${x.pct.toFixed(2)}%</td></tr>`).join('')||'<tr><td class="mut">Nadie todavía</td></tr>'}catch(e){$('rank').innerHTML='<tr><td class="mut">Sin conexión</td></tr>'}};
+$('rkd').ontoggle=()=>{if($('rkd').open)$('rk').click()};$('rk').onclick=async()=>{try{const d=await (await fetch(API+'/ranking')).json();$('rank').innerHTML=d.ranking.map((x,i)=>`<tr><td>${['🥇','🥈','🥉'][i]||i+1}</td><td>${x.display.replace(/</g,'')}</td><td class="${x.pct>=0?'up':'dn'}">${x.pct>=0?'▲ +':'▼ '}${x.pct.toFixed(2)}%</td></tr>`).join('')||'<tr><td class="mut">Nadie todavía</td></tr>'}catch(e){$('rank').innerHTML='<tr><td class="mut">Sin conexión</td></tr>'}};
 setInterval(()=>{if(S&&price)push()},60000);
 const tips=['Antes de comprar, decide: ¿a qué precio venderé si gano? ¿y si pierdo?','Una vela verde = el precio subió en ese tiempo; roja = bajó.','La línea morada punteada es tu precio promedio de compra.','Diversificar y no arriesgar todo es la regla #1.'];let ti=0;setInterval(()=>$('tipx').textContent='📌 '+tips[ti++%tips.length],6000);$('tipx').textContent='📌 '+tips[3];
 setMode(localStorage.getItem('btcsim_dark')==='1');onresize=draw;ui();loadK();conn();
