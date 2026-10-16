@@ -32,32 +32,37 @@ canvas{height:calc(100dvh - 330px);min-height:200px;max-height:460px}
 details{background:var(--card);margin:0 0 6px;padding:10px 12px}summary{font-weight:700;cursor:pointer}
 .grid .box b{font-size:15px}td,th{word-break:break-word}
 @media(max-width:380px){.price{font-size:22px}.tf{padding:5px 7px;font-size:12px}button{font-size:14px}}
+.animal{font-size:38px;line-height:1;width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--box);flex:none}.animal:empty{display:none}
+.animal.win{background:#c9f2dd;animation:hop 1s infinite alternate}.animal.lose{background:#ffd5da}@keyframes hop{to{transform:translateY(-4px)}}
+#modal{position:fixed;inset:0;background:#0007;z-index:20;display:none;align-items:flex-end;justify-content:center}#modal .sheet{background:var(--card);width:100%;max-width:640px;border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom))}
+#modal table td{font-size:15px;padding:6px 4px}#modal td:last-child{text-align:right;font-weight:700}
 </style></head><body><div class="wrap">
 <div class="top"><div class="row" style="justify-content:space-between"><h1>₿ Simulador Bitcoin</h1><div class="row"><span class="mut"><span id="dot"></span> <span id="src">conectando…</span></span><button id="mode" title="Modo oscuro">🌙</button></div></div>
 <div class="row" style="justify-content:space-between"><div class="price" id="price">—</div><div id="chg" class="mut"></div></div>
-<div id="banwrap" style="display:none"><div id="ban" class="banner flat">Aún no inviertes</div><div class="bigpl" id="big"></div></div></div>
+<div id="banwrap" style="display:none"><div class="row" style="flex-wrap:nowrap;gap:6px;margin-top:6px"><div id="animal" class="animal"></div><div id="ban" class="banner flat" style="flex:1;margin:0">Aún no inviertes</div></div><div class="bigpl" id="big"></div></div></div>
 <div class="demo">⚠️ Dinero de DEMOSTRACIÓN, no es real. Solo para aprender.</div>
 <div class="card"><div class="row" id="tfs"></div><canvas id="cv"></canvas></div>
 <div class="card" id="login"><b>¿Cómo te llamas?</b><div class="mut">Tu cuenta se guarda con tu nombre: puedes volver otro día o entrar desde otro celular.</div>
 <div class="row" style="margin-top:6px"><input id="nm" placeholder="Tu nombre y apellido"><button class="buy" id="go" style="width:100%">Entrar</button></div>
 <div class="chips" id="profiles"></div>
 <div id="setup" style="display:none;margin-top:10px"><b>Cuenta nueva: elige tu capital inicial</b>
-<div class="row" style="margin-top:6px;flex-wrap:nowrap"><select id="cur" style="flex:1"><option value="USD">Dólares ($)</option><option value="PEN">Soles (S/)</option></select><input id="cap" type="number" min="1" max="100000" value="1000" style="flex:1"></div>
+<div class="row" style="margin-top:6px;flex-wrap:nowrap"><select id="cur" style="flex:1"><option value="PEN" selected>Soles (S/)</option><option value="USD">Dólares ($)</option></select><input id="cap" type="number" min="1" max="100000" value="3000" style="flex:1"></div>
 <div class="mut" id="fxinfo"></div><button class="buy" id="create" style="width:100%;margin-top:6px">Crear mi cuenta</button></div>
 <div class="mut" id="lmsg" style="margin-top:6px"></div></div>
 <div class="card" id="panel" style="display:none">
-<div class="row" style="justify-content:space-between"><b id="who"></b><div class="row"><button class="tf" id="out">Cambiar alumno</button><button class="tf" id="reset">Reiniciar</button></div></div>
+<div class="row" style="justify-content:space-between"><b id="who"></b><div class="row"><button class="tf" id="out">Cambiar alumno</button></div></div>
 <div class="mut" id="sync"></div>
 <div class="grid" style="margin-top:6px"><div class="box"><span class="mut">Saldo disponible</span><b id="usd"></b></div><div class="box"><span class="mut">BTC que tienes</span><b id="btc"></b></div>
 <div class="box"><span class="mut">Precio promedio</span><b id="avg"></b></div><div class="box"><span class="mut">G/P de tu BTC</span><b id="pl"></b></div>
-<div class="box" style="grid-column:span 2"><span class="mut" id="eql"></span><b id="eq"></b></div></div>
+<div class="box" style="grid-column:span 2"><span class="mut" id="eql"></span><b id="eq"></b></div><div class="box" style="grid-column:span 2"><span class="mut">Comisiones pagadas (0.1% por operación, ya incluidas en tu G/P)</span><b id="fees"></b></div></div>
 <div id="msg" class="mut" style="margin-top:6px"></div></div>
-<details><summary>📜 Historial</summary><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Precio</th><th>BTC</th><th>Monto</th></tr></thead><tbody id="hist"></tbody></table></details>
+<details><summary>📜 Historial</summary><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Precio</th><th>BTC</th><th>Monto</th><th>Comisión</th></tr></thead><tbody id="hist"></tbody></table></details>
 <details id="rkd"><summary>🏆 Ranking de la clase</summary><button class="tf" id="rk" style="margin:6px 0">Actualizar</button><table><tbody id="rank"><tr><td class="mut">Toca Actualizar</td></tr></tbody></table></details>
 <details class="tip"><summary>💡 Consejos para aprender</summary><p id="tipx"></p><ul><li><b>Compra</b> cuando tengas un plan, no por emoción. Muchos esperan una bajada para comprar.</li>
 <li><b>Vende</b> cuando llegues a tu meta de ganancia o a tu límite de pérdida (stop).</li><li><b>Riesgo:</b> nunca pongas todo en una sola operación; prueba con 25%.</li>
 <li>El precio cambia cada segundo: ganar o perder es normal. Anota por qué compraste.</li><li>En la vida real existen comisiones y estafas. Esto es solo práctica.</li></ul></details>
 <p class="mut" style="text-align:center">Datos de precio públicos en vivo · Simulador educativo · Profesor Juan – I.E. Rosaspata</p></div>
+<div id="modal"><div class="sheet"><b id="mt" style="font-size:18px"></b><table style="margin:8px 0" id="mrows"></table><div class="row" style="flex-wrap:nowrap"><button class="tf" id="mno" style="flex:1;padding:12px">Cancelar</button><button id="mok" style="flex:2;padding:12px"></button></div><div class="mut" style="margin-top:6px">Comisión estándar de Binance Spot: 0.1% por operación.</div></div></div>
 <div class="bar" id="bar" style="display:none"><div class="in">
 <div class="row"><input id="amt" type="number" min="0" placeholder="Monto" style="flex:2"><button class="pct" data-p="25">25%</button><button class="pct" data-p="50">50%</button><button class="pct" data-p="100">100%</button></div>
 <div class="row" style="margin-top:6px"><button class="buy" id="bb" style="flex:1">▲ Comprar</button><button class="sell" id="bs" style="flex:1">▼ Vender</button></div></div></div>
@@ -65,7 +70,7 @@ details{background:var(--card);margin:0 0 6px;padding:10px 12px}summary{font-wei
 const API='https://simulador-btc-api.educaredmovil.workers.dev';const $=id=>document.getElementById(id);
 const norm=n=>n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
 const LS=k=>'btcsim2_'+k;let S=null,price=0,open24=0,tf=localStorage.getItem('btcsim_tf')||'1m',candles=[],ws=null,lastWs=0,fxLive=3.75;
-const cur=()=>S&&S.cur==='PEN'?{s:'S/ ',r:S.fx}:{s:'$',r:1};
+const FEE=0.001;const cur=()=>S?(S.cur==='PEN'?{s:'S/ ',r:S.fx}:{s:'$',r:1}):{s:'S/ ',r:fxLive};
 const fm=(usd,c=cur())=>c.s+(usd*c.r).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const REST=['https://data-api.binance.vision','https://api.binance.com'];
 async function rest(p){for(const h of REST){try{const r=await fetch(h+p);if(r.ok)return await r.json()}catch(e){}}throw 0}
@@ -73,7 +78,7 @@ async function rest(p){for(const h of REST){try{const r=await fetch(h+p);if(r.ok
 function setMode(d){document.body.classList.toggle('dark',d);$('mode').textContent=d?'☀️':'🌙';localStorage.setItem('btcsim_dark',d?'1':'0');draw()}
 $('mode').onclick=()=>setMode(!document.body.classList.contains('dark'));
 // fx
-fetch('https://open.er-api.com/v6/latest/USD').then(r=>r.json()).then(d=>{if(d.rates&&d.rates.PEN)fxLive=d.rates.PEN;fxInfo()}).catch(fxInfo);
+fetch('https://open.er-api.com/v6/latest/USD').then(r=>r.json()).then(d=>{if(d.rates&&d.rates.PEN)fxLive=d.rates.PEN;fxInfo();if(price&&!S)setP(price,$('src').textContent);draw()}).catch(fxInfo);
 function fxInfo(){$('fxinfo').textContent=$('cur').value==='PEN'?`Tipo de cambio hoy: 1 USD = S/ ${fxLive.toFixed(3)}. Máximo 100,000.`:'Máximo 100,000.'}$('cur').onchange=fxInfo;
 // timeframes
 ['1m','5m','15m','1h','4h','1d'].forEach(t=>{const b=document.createElement('button');b.className='tf'+(t===tf?' on':'');b.textContent=t;b.dataset.tf=t;b.onclick=()=>{document.querySelectorAll('[data-tf]').forEach(x=>x.classList.remove('on'));b.classList.add('on');tf=t;localStorage.setItem('btcsim_tf',t);loadK();conn()};$('tfs').appendChild(b)});
@@ -105,22 +110,30 @@ $('go').onclick=enter;$('nm').onkeydown=e=>{if(e.key==='Enter')enter()};
 $('create').onclick=()=>{const n=$('nm').value.trim(),c=$('cur').value,v=Math.min(100000,Math.max(1,+$('cap').value||0));if(!n)return;const fx=c==='PEN'?fxLive:1,usd=v/fx;
 S={name:n,cur:c,fx,start:usd,usd,btc:0,avg:0,h:[],created:Date.now()};$('setup').style.display='none';$('lmsg').textContent='';save();ui();draw()};
 $('out').onclick=()=>{S=null;$('nm').value='';$('setup').style.display='none';ui();draw()};
-$('reset').onclick=()=>{if(confirm('¿Reiniciar tu cuenta y volver al capital inicial?')){S.usd=S.start;S.btc=0;S.avg=0;S.h=[];save();ui();draw()}};
+
 function ui(){if(!S){$('login').style.display='';$('panel').style.display='none';$('bar').style.display='none';$('banwrap').style.display='none';showProfiles();$('hist').innerHTML='';return}$('login').style.display='none';$('panel').style.display='';$('bar').style.display='';$('banwrap').style.display='';
-$('who').textContent='👤 '+S.name;$('usd').textContent=fm(S.usd);$('btc').textContent=S.btc.toFixed(6);$('avg').textContent=S.btc>0?fm(S.avg):'—';$('amt').placeholder='Monto en '+(S.cur==='PEN'?'soles (S/)':'dólares ($)');
-const pl=S.btc*(price-S.avg),pp=S.avg?(price-S.avg)/S.avg*100:0;$('pl').innerHTML=S.btc>0&&price?`<span class="${pl>=0?'up':'dn'}">${pl>=0?'▲ +':'▼ −'}${fm(Math.abs(pl))} (${pp.toFixed(2)}%)</span>`:'—';
+$('who').textContent='👤 '+S.name;$('fees').textContent=fm(S.fees||0);$('usd').textContent=fm(S.usd);$('btc').textContent=S.btc.toFixed(6);$('avg').textContent=S.btc>0?fm(S.avg):'—';$('amt').placeholder='Monto en '+(S.cur==='PEN'?'soles (S/)':'dólares ($)')+' para comprar o vender';
+const pl=S.btc*(price*(1-FEE)-S.avg),pp=S.avg?(price*(1-FEE)-S.avg)/S.avg*100:0;$('pl').innerHTML=S.btc>0&&price?`<span class="${pl>=0?'up':'dn'}">${pl>=0?'▲ +':'▼ −'}${fm(Math.abs(pl))} (${pp.toFixed(2)}%)</span>`:'—';
 const eq=S.usd+S.btc*(price||S.avg),d=eq-S.start,dp=d/S.start*100;$('eql').textContent=`Patrimonio total (empezaste con ${fm(S.start)})`;$('eq').innerHTML=`${fm(eq)} <span class="${d>=0?'up':'dn'}">(${d>=0?'+':'−'}${fm(Math.abs(d))})</span>`;
-const b=$('ban'),bg=$('big');if(!price||Math.abs(d)<S.start*1e-6){b.className='banner flat';b.textContent=S.h.length?'Estás en EMPATE':'Aún no inviertes';bg.textContent='';}
-else if(d>0){b.className='banner win';b.textContent='🚀 ¡Estás GANANDO!';bg.innerHTML=`<span class="up">▲ +${fm(d)} (+${dp.toFixed(2)}%)</span>`}
-else{b.className='banner lose';b.textContent='📉 Estás PERDIENDO';bg.innerHTML=`<span class="dn">▼ −${fm(-d)} (${dp.toFixed(2)}%)</span>`}
-$('hist').innerHTML=S.h.slice().reverse().map(t=>`<tr><td>${t.t}</td><td class="${t.k==='Compra'?'up':'dn'}">${t.k}</td><td>${fm(t.p)}</td><td>${t.b.toFixed(6)}</td><td>${fm(t.u)}</td></tr>`).join('')}
+const b=$('ban'),bg=$('big'),an=$('animal');an.className='animal';an.textContent='';if(!price||Math.abs(d)<S.start*1e-6){b.className='banner flat';b.textContent=S.h.length?'Estás en EMPATE':'Aún no inviertes';bg.textContent='';}
+else if(d>0){b.className='banner win';b.textContent='¡Estás GANANDO!';an.className='animal win';an.textContent='🐂';an.title='Toro: mercado a tu favor';bg.innerHTML=`<span class="up">▲ +${fm(d)} (+${dp.toFixed(2)}%)</span>`}
+else{b.className='banner lose';b.textContent='Estás PERDIENDO';an.className='animal lose';an.textContent='🐻';an.title='Oso: vas perdiendo';bg.innerHTML=`<span class="dn">▼ −${fm(-d)} (${dp.toFixed(2)}%)</span>`}
+$('hist').innerHTML=S.h.slice().reverse().map(t=>`<tr><td>${t.t}</td><td class="${t.k==='Compra'?'up':'dn'}">${t.k}</td><td>${fm(t.p)}</td><td>${t.b.toFixed(6)}</td><td>${fm(t.u)}</td><td>${t.f!=null?fm(t.f,t.c==='PEN'?{s:'S/ ',r:S.fx}:{s:'$',r:1})+' '+(t.c||''):'—'}</td></tr>`).join('')}
 let pctSel=0;document.querySelectorAll('.pct').forEach(b=>b.onclick=()=>{pctSel=+b.dataset.p;$('amt').value=(S.usd*cur().r*pctSel/100).toFixed(2);$('msg').textContent=`${pctSel}% elegido: al comprar usa ${pctSel}% de tu saldo; al vender, ${pctSel}% de tu BTC.`});
 $('amt').oninput=()=>pctSel=0;
-function trade(buy){if(!price)return msg('Esperando precio…');const now=new Date().toLocaleString('es-PE',{day:'2-digit',month:'2-digit',hour:'numeric',minute:'2-digit',hour12:true});const r=cur().r;
-if(buy){let u=pctSel?S.usd*pctSel/100:(+$('amt').value)/r;if(!(u>0)||u>S.usd+1e-9)return msg('Monto no válido o saldo insuficiente.');u=Math.min(u,S.usd);const b=u/price;S.avg=(S.avg*S.btc+u)/(S.btc+b);S.btc+=b;S.usd-=u;S.h.push({t:now,k:'Compra',p:price,b,u});msg(`Compraste ${b.toFixed(6)} BTC.`)}
-else{let b=pctSel?S.btc*pctSel/100:(+$('amt').value)/r/price;if(!(b>0)||b>S.btc+1e-12)return msg('No tienes suficiente BTC.');b=Math.min(b,S.btc);const u=b*price,g=(price-S.avg)*b;S.btc-=b;S.usd+=u;if(S.btc<1e-10){S.btc=0;S.avg=0}S.h.push({t:now,k:'Venta',p:price,b,u});msg(`Vendiste ${b.toFixed(6)} BTC: ${g>=0?'ganaste':'perdiste'} ${fm(Math.abs(g))}.`)}
-save();ui();draw()}
-function msg(t){$('msg').textContent=t}$('bb').onclick=()=>trade(1);$('bs').onclick=()=>trade(0);
+function trade(buy){if(!price)return msg('Esperando precio…');const r=cur().r,p=price;let o;
+if(buy){let u=pctSel?S.usd*pctSel/100:(+$('amt').value)/r;if(!(u>0)||u>S.usd+1e-9)return msg('Monto no válido o saldo insuficiente.');u=Math.min(u,S.usd);const f=u*FEE,b=(u-f)/p;
+o={buy:1,p,u,f,b,rows:[['Pagas',fm(u)],['Comisión (0.1%)','−'+fm(f)],['Neto invertido',fm(u-f)],['Recibes',b.toFixed(6)+' BTC']]}}
+else{let b=pctSel?S.btc*pctSel/100:(+$('amt').value)/r/p;if(!(b>0)||b>S.btc*(1+1e-9))return msg('No tienes suficiente BTC.');b=Math.min(b,S.btc);const g=b*p,f=g*FEE;
+o={buy:0,p,b,g,f,rows:[['Vendes',b.toFixed(6)+' BTC'+(pctSel?` (${pctSel}%)`:'')],['Recibes (bruto)',fm(g)],['Comisión (0.1%)','−'+fm(f)],['Neto que recibes',fm(g-f)]]}}
+$('mt').textContent=o.buy?'¿Confirmas la COMPRA?':'¿Confirmas la VENTA?';$('mrows').innerHTML=o.rows.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td></tr>`).join('')+`<tr><td class="mut">Precio BTC</td><td class="mut">${fm(p)}</td></tr>`;
+$('mok').className=o.buy?'buy':'sell';$('mok').textContent=o.buy?'▲ Confirmar compra':'▼ Confirmar venta';$('modal').style.display='flex';pend=o}
+let pend=null;function closeM(){$('modal').style.display='none';pend=null}
+function exec(){const o=pend;closeM();if(!o)return;const now=new Date().toLocaleString('es-PE',{day:'2-digit',month:'2-digit',hour:'numeric',minute:'2-digit',hour12:true});S.fees=(S.fees||0)+o.f;
+if(o.buy){if(o.u>S.usd+1e-9)return msg('Saldo insuficiente.');S.avg=(S.avg*S.btc+o.u)/(S.btc+o.b);S.btc+=o.b;S.usd-=o.u;S.h.push({t:now,k:'Compra',p:o.p,b:o.b,u:o.u,f:o.f,c:S.cur});msg(`Compraste ${o.b.toFixed(6)} BTC (comisión ${fm(o.f)}).`)}
+else{const b=Math.min(o.b,S.btc),net=o.g-o.f,gain=net-S.avg*b;S.btc-=b;S.usd+=net;if(S.btc<1e-10){S.btc=0;S.avg=0}S.h.push({t:now,k:'Venta',p:o.p,b,u:o.g,f:o.f,c:S.cur});msg(`Vendiste ${b.toFixed(6)} BTC. Neto ${fm(net)}: ${gain>=0?'ganaste':'perdiste'} ${fm(Math.abs(gain))} (con comisiones).`)}
+pctSel=0;$('amt').value='';save();ui();draw()}
+function msg(t){$('msg').textContent=t}$('bb').onclick=()=>trade(1);$('mok').onclick=exec;$('mno').onclick=closeM;$('bs').onclick=()=>trade(0);
 $('rkd').ontoggle=()=>{if($('rkd').open)$('rk').click()};$('rk').onclick=async()=>{try{const d=await (await fetch(API+'/ranking')).json();$('rank').innerHTML=d.ranking.map((x,i)=>`<tr><td>${['🥇','🥈','🥉'][i]||i+1}</td><td>${x.display.replace(/</g,'')}</td><td class="${x.pct>=0?'up':'dn'}">${x.pct>=0?'▲ +':'▼ '}${x.pct.toFixed(2)}%</td></tr>`).join('')||'<tr><td class="mut">Nadie todavía</td></tr>'}catch(e){$('rank').innerHTML='<tr><td class="mut">Sin conexión</td></tr>'}};
 setInterval(()=>{if(S&&price)push()},60000);
 const tips=['Antes de comprar, decide: ¿a qué precio venderé si gano? ¿y si pierdo?','Una vela verde = el precio subió en ese tiempo; roja = bajó.','La línea morada punteada es tu precio promedio de compra.','Diversificar y no arriesgar todo es la regla #1.'];let ti=0;setInterval(()=>$('tipx').textContent='📌 '+tips[ti++%tips.length],6000);$('tipx').textContent='📌 '+tips[3];
