@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS accounts (
+  id TEXT PRIMARY KEY,
+  display TEXT NOT NULL,
+  data TEXT NOT NULL,
+  pct REAL DEFAULT 0,
+  updated INTEGER DEFAULT 0
+);

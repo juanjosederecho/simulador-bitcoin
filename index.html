@@ -1,141 +1,1350 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#8b7cf6"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><link rel="apple-touch-icon" href="icon-192.png">
-<title>Simulador Bitcoin – Aula EPT</title><style>
-:root{--bg1:#f6f3ff;--bg2:#e9f7f3;--card:#fff;--ink:#2d2a4a;--mut:#7a7699;--box:#f7f6fd;--line:#eee;--up:#1fa463;--dn:#e5485a;--pri:#8b7cf6;--pas:#ffe7c2;--chip:#eee9ff;--in:#e3defa}
-body.dark{--bg1:#16151f;--bg2:#1b2226;--card:#232233;--ink:#ecebf7;--mut:#a29fc0;--box:#2c2b40;--line:#34334a;--up:#3ddc8c;--dn:#ff6b7c;--pas:#4a3b1f;--chip:#34325a;--in:#454366}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,var(--bg1),var(--bg2));color:var(--ink);min-height:100vh;transition:background .3s}
-.wrap{max-width:560px;margin:auto;padding:10px}.card{background:var(--card);border-radius:18px;padding:12px;margin:10px 0;box-shadow:0 4px 14px #8b7cf622}
-.demo{background:var(--pas);border-radius:12px;padding:6px 10px;font-size:13px;text-align:center}
-h1{font-size:19px;margin:4px 0}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.price{font-size:30px;font-weight:800}.up{color:var(--up)}.dn{color:var(--dn)}.mut{color:var(--mut);font-size:12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.box{background:var(--box);border-radius:12px;padding:8px}.box b{display:block;font-size:16px}
-button,select{border:0;border-radius:12px;padding:10px 12px;font-weight:700;font-size:15px;cursor:pointer;color:var(--ink)}
-.buy{background:#c9f2dd;color:#167a4b}.sell{background:#ffd5da;color:#b3263a}.tf{background:var(--chip);padding:6px 9px;font-size:13px}.tf.on{background:var(--pri);color:#fff}
-.pct{background:var(--chip);padding:6px 10px;font-size:13px}input,select{border:2px solid var(--in);border-radius:12px;padding:10px;font-size:16px;width:100%;background:var(--card);color:var(--ink)}
-canvas{width:100%;height:220px;display:block}table{width:100%;font-size:12px;border-collapse:collapse}td,th{padding:4px;border-bottom:1px solid var(--line);text-align:left}
-.tip{font-size:14px;line-height:1.4}#dot{width:9px;height:9px;border-radius:50%;background:#ccc;display:inline-block}
-.banner{border-radius:14px;padding:10px;text-align:center;font-weight:900;font-size:20px;color:#fff;margin-bottom:8px}
-.banner.win{background:linear-gradient(90deg,#1fa463,#3ddc8c)}.banner.lose{background:linear-gradient(90deg,#e5485a,#ff8a5c)}.banner.flat{background:#9b97b8}
-.bigpl{font-size:28px;font-weight:900;text-align:center;margin:4px 0}.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.chips button{background:var(--chip);padding:5px 9px;font-size:13px}
-#mode{background:var(--chip);padding:6px 10px}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#8b7cf6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Simulador Bitcoin">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>Simulador Bitcoin</title>
+  <style>
+    :root {
+      --bg1: #f5f2ff;
+      --bg2: #e8f8f3;
+      --card: #ffffff;
+      --ink: #2b2845;
+      --mut: #757196;
+      --box: #f6f5fc;
+      --line: #eae8f5;
+      --up: #1b9e5e;
+      --up-bg: #ccf4df;
+      --dn: #e04456;
+      --dn-bg: #ffd6dc;
+      --pri: #8b7cf6;
+      --pas: #ffdfae;
+      --pas-ink: #6b470c;
+      --chip: #ede8ff;
+      --in: #dfdaf8;
+    }
+    body.dark {
+      --bg1: #151421;
+      --bg2: #192228;
+      --card: #222133;
+      --ink: #efedf9;
+      --mut: #a39fc2;
+      --box: #2b2a40;
+      --line: #35334d;
+      --up: #3ee08e;
+      --up-bg: #1b4634;
+      --dn: #ff6e7f;
+      --dn-bg: #4b222b;
+      --pri: #9b8df8;
+      --pas: #45361b;
+      --pas-ink: #ffdca4;
+      --chip: #333157;
+      --in: #454369;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: clip;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(160deg, var(--bg1), var(--bg2));
+      color: var(--ink);
+      min-height: 100dvh;
+      transition: background 0.25s, color 0.25s;
+    }
+    body {
+      padding-bottom: calc(130px + env(safe-area-inset-bottom));
+    }
+    .wrap {
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0;
+    }
+    /* Encabezado fijo arriba */
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: env(safe-area-inset-top) 0 6px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    .demo {
+      background: var(--pas);
+      color: var(--pas-ink);
+      font-weight: 800;
+      font-size: 11.5px;
+      text-align: center;
+      padding: 4px 8px;
+      letter-spacing: 0.2px;
+    }
+    .top-inner {
+      padding: 6px 12px 2px;
+    }
+    .top h1 {
+      font-size: 16px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .price {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+    .up { color: var(--up); }
+    .dn { color: var(--dn); }
+    .mut {
+      color: var(--mut);
+      font-size: 12px;
+    }
+    #dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      display: inline-block;
+    }
+    /* Banner Ganando / Perdiendo / Empate */
+    .banner-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .animal {
+      font-size: 32px;
+      line-height: 1;
+      width: 46px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--box);
+      flex: none;
+    }
+    .animal:empty { display: none; }
+    .animal.win {
+      background: var(--up-bg);
+      animation: bullHop 0.85s ease-in-out infinite alternate;
+    }
+    .animal.lose {
+      background: var(--dn-bg);
+      animation: bearSway 1.1s ease-in-out infinite alternate;
+    }
+    @keyframes bullHop {
+      0% { transform: translateY(1px) scale(0.98); }
+      100% { transform: translateY(-5px) scale(1.06); }
+    }
+    @keyframes bearSway {
+      0% { transform: rotate(-6deg); }
+      100% { transform: rotate(6deg); }
+    }
+    .banner {
+      flex: 1;
+      border-radius: 12px;
+      padding: 8px 10px;
+      text-align: center;
+      font-weight: 900;
+      font-size: 16px;
+      color: #ffffff;
+      margin: 0;
+      letter-spacing: 0.2px;
+    }
+    .banner.win {
+      background: linear-gradient(90deg, #169457, #34d382);
+    }
+    .banner.lose {
+      background: linear-gradient(90deg, #dc3c4e, #ff7a59);
+    }
+    .banner.flat {
+      background: #8e8aa8;
+    }
+    .bigpl {
+      font-size: 19px;
+      font-weight: 900;
+      text-align: center;
+      margin: 3px 0 0;
+    }
+    /* Tarjetas y secciones */
+    .card {
+      background: var(--card);
+      margin: 0 0 6px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+    .box {
+      background: var(--box);
+      border-radius: 12px;
+      padding: 7px 9px;
+    }
+    .box b {
+      display: block;
+      font-size: 14.5px;
+      margin-top: 2px;
+    }
+    button, select {
+      border: 0;
+      border-radius: 11px;
+      padding: 9px 11px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--ink);
+      font-family: inherit;
+    }
+    .buy {
+      background: var(--up-bg);
+      color: var(--up);
+    }
+    .sell {
+      background: var(--dn-bg);
+      color: var(--dn);
+    }
+    .tf {
+      background: var(--chip);
+      padding: 5px 9px;
+      font-size: 12.5px;
+    }
+    .tf.on {
+      background: var(--pri);
+      color: #ffffff;
+    }
+    .pct {
+      background: var(--chip);
+      flex: 1;
+      padding: 7px 0;
+      font-size: 13px;
+    }
+    .pct.on {
+      background: var(--pri);
+      color: #ffffff;
+    }
+    input, select {
+      border: 2px solid var(--in);
+      border-radius: 11px;
+      padding: 9px 10px;
+      font-size: 15px;
+      width: 100%;
+      background: var(--card);
+      color: var(--ink);
+      font-family: inherit;
+    }
+    /* Gráfico central */
+    canvas#cv {
+      width: 100%;
+      height: clamp(190px, 34dvh, 320px);
+      display: block;
+      margin-top: 4px;
+    }
+    .chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .chips button {
+      background: var(--chip);
+      padding: 6px 10px;
+      font-size: 12.5px;
+    }
+    .icon-btn {
+      background: var(--chip);
+      padding: 5px 9px;
+      font-size: 13px;
+    }
+    /* Secciones plegables */
+    details {
+      background: var(--card);
+      margin: 0 0 6px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    summary {
+      font-weight: 800;
+      font-size: 14.5px;
+      cursor: pointer;
+      user-select: none;
+    }
+    table {
+      width: 100%;
+      font-size: 11.5px;
+      border-collapse: collapse;
+      margin-top: 6px;
+    }
+    td, th {
+      padding: 5px 3px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      word-break: break-word;
+    }
+    .tip {
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+    .tip ul {
+      padding-left: 18px;
+      margin: 6px 0 0;
+    }
+    .tip li {
+      margin-bottom: 6px;
+    }
+    /* Barra inferior fija para celular */
+    .bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 12;
+      background: var(--card);
+      border-top: 1px solid var(--line);
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    }
+    .bar .in {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .bar .row {
+      flex-wrap: nowrap;
+    }
+    .bar input {
+      padding: 8px 10px;
+      font-size: 15px;
+    }
+    /* Hoja de confirmación y modal QR */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 30;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-backdrop .sheet {
+      background: var(--card);
+      width: 100%;
+      max-width: 640px;
+      border-radius: 20px 20px 0 0;
+      padding: 16px 14px calc(16px + env(safe-area-inset-bottom));
+      box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.25);
+    }
+    #modal table td {
+      font-size: 14.5px;
+      padding: 6px 4px;
+    }
+    #modal td:last-child {
+      text-align: right;
+      font-weight: 800;
+    }
+    @media (max-width: 390px) {
+      .price { font-size: 22px; }
+      .tf { padding: 4px 7px; font-size: 11.5px; }
+      .banner { font-size: 14.5px; padding: 7px 8px; }
+      .bigpl { font-size: 17px; }
+      button { font-size: 13.5px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- ENCABEZADO FIJO ARRIBA -->
+    <div class="top">
+      <div class="demo">⚠️ Dinero de DEMOSTRACIÓN, no es real</div>
+      <div class="top-inner">
+        <div class="row" style="justify-content:space-between">
+          <h1>₿ Simulador Bitcoin</h1>
+          <div class="row" style="gap:6px">
+            <span class="mut"><span id="dot"></span> <span id="src">conectando…</span></span>
+            <button id="qrBtn" class="icon-btn" title="Código QR para compartir">📲 QR</button>
+            <button id="mode" class="icon-btn" title="Cambiar modo claro/oscuro">🌙</button>
+          </div>
+        </div>
+        <div class="row" style="justify-content:space-between;margin-top:2px">
+          <div class="price" id="price">—</div>
+          <div id="chg" class="mut" style="font-weight:700"></div>
+        </div>
+        <!-- BANNER GANANDO / PERDIENDO / EMPATE -->
+        <div id="banwrap" style="display:none">
+          <div class="banner-row">
+            <div id="animal" class="animal"></div>
+            <div id="ban" class="banner flat">Estás en EMPATE</div>
+          </div>
+          <div class="bigpl" id="big"></div>
+        </div>
+      </div>
+    </div>
 
-html,body{overflow-x:clip;width:100%}body{min-height:100dvh;padding-bottom:calc(120px + env(safe-area-inset-bottom))}
-.wrap{max-width:640px;padding:0}.card{border-radius:0;margin:0 0 6px;box-shadow:none;padding:10px 12px}
-.top{position:sticky;top:0;z-index:5;background:var(--card);padding:calc(6px + env(safe-area-inset-top)) 12px 6px;border-bottom:1px solid var(--line)}
-.top h1{font-size:15px;margin:0}.price{font-size:26px}.demo{border-radius:0;font-size:11px;padding:3px}
-.banner{font-size:15px;padding:6px;margin:6px 0 0;border-radius:10px}.bigpl{font-size:20px;margin:2px 0 0}
-canvas{height:calc(100dvh - 330px);min-height:200px;max-height:460px}
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 14px #0002}
-.bar .in{max-width:640px;margin:auto}.bar .row{flex-wrap:nowrap}.bar input{padding:8px;font-size:16px}.pct{flex:1;padding:6px 0}
-details{background:var(--card);margin:0 0 6px;padding:10px 12px}summary{font-weight:700;cursor:pointer}
-.grid .box b{font-size:15px}td,th{word-break:break-word}
-@media(max-width:380px){.price{font-size:22px}.tf{padding:5px 7px;font-size:12px}button{font-size:14px}}
-.animal{font-size:38px;line-height:1;width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--box);flex:none}.animal:empty{display:none}
-.animal.win{background:#c9f2dd;animation:hop 1s infinite alternate}.animal.lose{background:#ffd5da}@keyframes hop{to{transform:translateY(-4px)}}
-#modal{position:fixed;inset:0;background:#0007;z-index:20;display:none;align-items:flex-end;justify-content:center}#modal .sheet{background:var(--card);width:100%;max-width:640px;border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom))}
-#modal table td{font-size:15px;padding:6px 4px}#modal td:last-child{text-align:right;font-weight:700}
-</style></head><body><div class="wrap">
-<div class="top"><div class="row" style="justify-content:space-between"><h1>₿ Simulador Bitcoin</h1><div class="row"><span class="mut"><span id="dot"></span> <span id="src">conectando…</span></span><button id="mode" title="Modo oscuro">🌙</button></div></div>
-<div class="row" style="justify-content:space-between"><div class="price" id="price">—</div><div id="chg" class="mut"></div></div>
-<div id="banwrap" style="display:none"><div class="row" style="flex-wrap:nowrap;gap:6px;margin-top:6px"><div id="animal" class="animal"></div><div id="ban" class="banner flat" style="flex:1;margin:0">Aún no inviertes</div></div><div class="bigpl" id="big"></div></div></div>
-<div class="demo">⚠️ Dinero de DEMOSTRACIÓN, no es real. Solo para aprender.</div>
-<div class="card"><div class="row" id="tfs"></div><canvas id="cv"></canvas></div>
-<div class="card" id="login"><b>¿Cómo te llamas?</b><div class="mut">Tu cuenta se guarda con tu nombre: puedes volver otro día o entrar desde otro celular.</div>
-<div class="row" style="margin-top:6px"><input id="nm" placeholder="Tu nombre y apellido"><button class="buy" id="go" style="width:100%">Entrar</button></div>
-<div class="chips" id="profiles"></div>
-<div id="setup" style="display:none;margin-top:10px"><b>Cuenta nueva: elige tu capital inicial</b>
-<div class="row" style="margin-top:6px;flex-wrap:nowrap"><select id="cur" style="flex:1"><option value="PEN" selected>Soles (S/)</option><option value="USD">Dólares ($)</option></select><input id="cap" type="number" min="1" max="100000" value="3000" style="flex:1"></div>
-<div class="mut" id="fxinfo"></div><button class="buy" id="create" style="width:100%;margin-top:6px">Crear mi cuenta</button></div>
-<div class="mut" id="lmsg" style="margin-top:6px"></div></div>
-<div class="card" id="panel" style="display:none">
-<div class="row" style="justify-content:space-between"><b id="who"></b><div class="row"><button class="tf" id="out">Cambiar alumno</button></div></div>
-<div class="mut" id="sync"></div>
-<div class="grid" style="margin-top:6px"><div class="box"><span class="mut">Saldo disponible</span><b id="usd"></b></div><div class="box"><span class="mut">BTC que tienes</span><b id="btc"></b></div>
-<div class="box"><span class="mut">Precio promedio</span><b id="avg"></b></div><div class="box"><span class="mut">G/P de tu BTC</span><b id="pl"></b></div>
-<div class="box" style="grid-column:span 2"><span class="mut" id="eql"></span><b id="eq"></b></div><div class="box" style="grid-column:span 2"><span class="mut">Comisiones pagadas (0.1% por operación, ya incluidas en tu G/P)</span><b id="fees"></b></div></div>
-<div id="msg" class="mut" style="margin-top:6px"></div></div>
-<details><summary>📜 Historial</summary><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Precio</th><th>BTC</th><th>Monto</th><th>Comisión</th></tr></thead><tbody id="hist"></tbody></table></details>
-<details id="rkd"><summary>🏆 Ranking de la clase</summary><button class="tf" id="rk" style="margin:6px 0">Actualizar</button><table><tbody id="rank"><tr><td class="mut">Toca Actualizar</td></tr></tbody></table></details>
-<details class="tip"><summary>💡 Consejos para aprender</summary><p id="tipx"></p><ul><li><b>Compra</b> cuando tengas un plan, no por emoción. Muchos esperan una bajada para comprar.</li>
-<li><b>Vende</b> cuando llegues a tu meta de ganancia o a tu límite de pérdida (stop).</li><li><b>Riesgo:</b> nunca pongas todo en una sola operación; prueba con 25%.</li>
-<li>El precio cambia cada segundo: ganar o perder es normal. Anota por qué compraste.</li><li>En la vida real existen comisiones y estafas. Esto es solo práctica.</li></ul></details>
-<p class="mut" style="text-align:center">Datos de precio públicos en vivo · Simulador educativo · Profesor Juan – I.E. Rosaspata</p></div>
-<div id="modal"><div class="sheet"><b id="mt" style="font-size:18px"></b><table style="margin:8px 0" id="mrows"></table><div class="row" style="flex-wrap:nowrap"><button class="tf" id="mno" style="flex:1;padding:12px">Cancelar</button><button id="mok" style="flex:2;padding:12px"></button></div><div class="mut" style="margin-top:6px">Comisión estándar de Binance Spot: 0.1% por operación.</div></div></div>
-<div class="bar" id="bar" style="display:none"><div class="in">
-<div class="row"><input id="amt" type="number" min="0" placeholder="Monto" style="flex:2"><button class="pct" data-p="25">25%</button><button class="pct" data-p="50">50%</button><button class="pct" data-p="100">100%</button></div>
-<div class="row" style="margin-top:6px"><button class="buy" id="bb" style="flex:1">▲ Comprar</button><button class="sell" id="bs" style="flex:1">▼ Vender</button></div></div></div>
-<script>
-const API='https://simulador-btc-api.educaredmovil.workers.dev';const $=id=>document.getElementById(id);
-const norm=n=>n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
-const LS=k=>'btcsim2_'+k;let S=null,price=0,open24=0,tf=localStorage.getItem('btcsim_tf')||'1m',candles=[],ws=null,lastWs=0,fxLive=3.75;
-const FEE=0.001;const cur=()=>S?(S.cur==='PEN'?{s:'S/ ',r:S.fx}:{s:'$',r:1}):{s:'S/ ',r:fxLive};
-const fm=(usd,c=cur())=>c.s+(usd*c.r).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-const REST=['https://data-api.binance.vision','https://api.binance.com'];
-async function rest(p){for(const h of REST){try{const r=await fetch(h+p);if(r.ok)return await r.json()}catch(e){}}throw 0}
-// dark mode
-function setMode(d){document.body.classList.toggle('dark',d);$('mode').textContent=d?'☀️':'🌙';localStorage.setItem('btcsim_dark',d?'1':'0');draw()}
-$('mode').onclick=()=>setMode(!document.body.classList.contains('dark'));
-// fx
-fetch('https://open.er-api.com/v6/latest/USD').then(r=>r.json()).then(d=>{if(d.rates&&d.rates.PEN)fxLive=d.rates.PEN;fxInfo();if(price&&!S)setP(price,$('src').textContent);draw()}).catch(fxInfo);
-function fxInfo(){$('fxinfo').textContent=$('cur').value==='PEN'?`Tipo de cambio hoy: 1 USD = S/ ${fxLive.toFixed(3)}. Máximo 100,000.`:'Máximo 100,000.'}$('cur').onchange=fxInfo;
-// timeframes
-['1m','5m','15m','1h','4h','1d'].forEach(t=>{const b=document.createElement('button');b.className='tf'+(t===tf?' on':'');b.textContent=t;b.dataset.tf=t;b.onclick=()=>{document.querySelectorAll('[data-tf]').forEach(x=>x.classList.remove('on'));b.classList.add('on');tf=t;localStorage.setItem('btcsim_tf',t);loadK();conn()};$('tfs').appendChild(b)});
-async function loadK(){try{const d=await rest(`/api/v3/uiKlines?symbol=BTCUSDT&interval=${tf}&limit=60`);candles=d.map(k=>({t:k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]}));draw()}catch(e){}}
-function conn(){if(ws){ws.onclose=null;ws.close()}ws=new WebSocket(`wss://data-stream.binance.vision/stream?streams=btcusdt@aggTrade/btcusdt@kline_${tf}/btcusdt@ticker`);
-ws.onmessage=e=>{const d=JSON.parse(e.data).data;lastWs=Date.now();if(d.e==='aggTrade')setP(+d.p,'en vivo');
-else if(d.e==='kline'){const k=d.k,c={t:k.t,o:+k.o,h:+k.h,l:+k.l,c:+k.c};const L=candles[candles.length-1];if(L&&L.t===c.t)candles[candles.length-1]=c;else{candles.push(c);if(candles.length>60)candles.shift()}draw()}
-else if(d.e==='24hrTicker')open24=+d.o};ws.onclose=()=>setTimeout(conn,3000)}
-setInterval(async()=>{if(Date.now()-lastWs>5000){try{const d=await rest('/api/v3/ticker/24hr?symbol=BTCUSDT');open24=+d.openPrice;setP(+d.lastPrice,'respaldo REST');const L=candles[candles.length-1];if(L){L.c=price;L.h=Math.max(L.h,price);L.l=Math.min(L.l,price);draw()}}catch(e){$('src').textContent='sin conexión'}}},3000);
-let prev=0;function setP(p,src){prev=price;price=p;const el=$('price');el.textContent=fm(p);el.className='price '+(p>=prev?'up':'dn');$('src').textContent=src;$('dot').style.background=src==='en vivo'?'#2bb673':'#f5a623';
-if(open24){const c=(p-open24)/open24*100;$('chg').innerHTML=`<span class="${c>=0?'up':'dn'}">${c>=0?'▲ +':'▼ '}${c.toFixed(2)}% 24h</span>`}ui()}
-function draw(){const cv=$('cv'),r=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;cv.width=W*r;cv.height=H*r;const g=cv.getContext('2d');g.scale(r,r);if(!candles.length)return;
-const dk=document.body.classList.contains('dark'),cr=cur().r,hi=Math.max(...candles.map(c=>c.h)),lo=Math.min(...candles.map(c=>c.l)),pad=62,y=v=>8+(hi-v)/(hi-lo||1)*(H-16),w=(W-pad)/candles.length;
-g.font='10px sans-serif';for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4;g.fillStyle=dk?'#a29fc0':'#7a7699';g.fillText(Math.round(v*cr).toLocaleString('en-US'),W-pad+4,y(v)+3);g.strokeStyle=dk?'#34334a':'#eee';g.beginPath();g.moveTo(0,y(v));g.lineTo(W-pad,y(v));g.stroke()}
-candles.forEach((c,i)=>{const x=i*w+w/2,col=c.c>=c.o?(dk?'#3ddc8c':'#2bb673'):(dk?'#ff6b7c':'#ef5b6b');g.strokeStyle=g.fillStyle=col;g.beginPath();g.moveTo(x,y(c.h));g.lineTo(x,y(c.l));g.stroke();g.fillRect(x-w*.35,Math.min(y(c.o),y(c.c)),w*.7,Math.max(1,Math.abs(y(c.o)-y(c.c))))});
-if(S&&S.btc>0&&S.avg<=hi&&S.avg>=lo){g.strokeStyle='#8b7cf6';g.setLineDash([4,3]);g.beginPath();g.moveTo(0,y(S.avg));g.lineTo(W-pad,y(S.avg));g.stroke();g.setLineDash([])}}
-// accounts
-function profiles(){return JSON.parse(localStorage.getItem(LS('profiles'))||'[]')}
-function showProfiles(){$('profiles').innerHTML=profiles().map(p=>`<button data-n="${p.replace(/"/g,'')}">👤 ${p}</button>`).join('');$('profiles').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('nm').value=b.dataset.n;enter()})}
-let pending=null;
-function save(){if(!S)return;S.updated=Date.now();const k=norm(S.name);localStorage.setItem(LS('acc_'+k),JSON.stringify(S));const p=profiles().filter(x=>norm(x)!==k);p.unshift(S.name);localStorage.setItem(LS('profiles'),JSON.stringify(p.slice(0,12)));
-clearTimeout(pending);pending=setTimeout(push,800)}
-async function push(){if(!S)return;const eq=S.usd+S.btc*(price||S.avg);try{const r=await fetch(API+'/account',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:S.name,data:S,pct:(eq-S.start)/S.start*100})});$('sync').textContent=r.ok?'☁️ Guardado en la nube':'💾 Guardado solo en este equipo'}catch(e){$('sync').textContent='💾 Guardado solo en este equipo (sin conexión)'}}
-async function enter(){const n=$('nm').value.trim();if(!n)return;const k=norm(n);$('lmsg').textContent='Buscando tu cuenta…';let cloud=null,ok=false;
-try{const r=await fetch(API+'/account?name='+encodeURIComponent(k));if(r.ok){cloud=(await r.json()).account;ok=true}}catch(e){}
-const local=JSON.parse(localStorage.getItem(LS('acc_'+k))||'null');let a=cloud&&local?((local.updated||0)>(cloud.updated||0)?local:cloud):(cloud||local);
-if(a){S=a;$('lmsg').textContent='';save();ui();draw()}else{$('setup').style.display='';$('lmsg').textContent=(ok?'':'(Sin conexión a la nube) ')+'No encontré una cuenta con ese nombre. Créala:';fxInfo()}}
-$('go').onclick=enter;$('nm').onkeydown=e=>{if(e.key==='Enter')enter()};
-$('create').onclick=()=>{const n=$('nm').value.trim(),c=$('cur').value,v=Math.min(100000,Math.max(1,+$('cap').value||0));if(!n)return;const fx=c==='PEN'?fxLive:1,usd=v/fx;
-S={name:n,cur:c,fx,start:usd,usd,btc:0,avg:0,h:[],created:Date.now()};$('setup').style.display='none';$('lmsg').textContent='';save();ui();draw()};
-$('out').onclick=()=>{S=null;$('nm').value='';$('setup').style.display='none';ui();draw()};
+    <!-- GRÁFICO CENTRAL DE VELAS JAPONESAS -->
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div class="row" id="tfs" style="gap:5px"></div>
+        <span class="mut" id="avgLegend" style="font-size:11px"></span>
+      </div>
+      <canvas id="cv"></canvas>
+    </div>
 
-function ui(){if(!S){$('login').style.display='';$('panel').style.display='none';$('bar').style.display='none';$('banwrap').style.display='none';showProfiles();$('hist').innerHTML='';return}$('login').style.display='none';$('panel').style.display='';$('bar').style.display='';$('banwrap').style.display='';
-$('who').textContent='👤 '+S.name;$('fees').textContent=fm(S.fees||0);$('usd').textContent=fm(S.usd);$('btc').textContent=S.btc.toFixed(6);$('avg').textContent=S.btc>0?fm(S.avg):'—';$('amt').placeholder='Monto en '+(S.cur==='PEN'?'S/':'$');
-const pl=S.btc*(price*(1-FEE)-S.avg),pp=S.avg?(price*(1-FEE)-S.avg)/S.avg*100:0;$('pl').innerHTML=S.btc>0&&price?`<span class="${pl>=0?'up':'dn'}">${pl>=0?'▲ +':'▼ −'}${fm(Math.abs(pl))} (${pp.toFixed(2)}%)</span>`:'—';
-const eq=S.usd+S.btc*(price||S.avg),d=eq-S.start,dp=d/S.start*100;$('eql').textContent=`Patrimonio total (empezaste con ${fm(S.start)})`;$('eq').innerHTML=`${fm(eq)} <span class="${d>=0?'up':'dn'}">(${d>=0?'+':'−'}${fm(Math.abs(d))})</span>`;
-const b=$('ban'),bg=$('big'),an=$('animal');an.className='animal';an.textContent='';if(!price||Math.abs(d)<S.start*1e-6){b.className='banner flat';b.textContent=S.h.length?'Estás en EMPATE':'Aún no inviertes';bg.textContent='';}
-else if(d>0){b.className='banner win';b.textContent='¡Estás GANANDO!';an.className='animal win';an.textContent='🐂';an.title='Toro: mercado a tu favor';bg.innerHTML=`<span class="up">▲ +${fm(d)} (+${dp.toFixed(2)}%)</span>`}
-else{b.className='banner lose';b.textContent='Estás PERDIENDO';an.className='animal lose';an.textContent='🐻';an.title='Oso: vas perdiendo';bg.innerHTML=`<span class="dn">▼ −${fm(-d)} (${dp.toFixed(2)}%)</span>`}
-$('hist').innerHTML=S.h.slice().reverse().map(t=>`<tr><td>${t.t}</td><td class="${t.k==='Compra'?'up':'dn'}">${t.k}</td><td>${fm(t.p)}</td><td>${t.b.toFixed(6)}</td><td>${fm(t.u)}</td><td>${t.f!=null?fm(t.f,t.c==='PEN'?{s:'S/ ',r:S.fx}:{s:'$',r:1})+' '+(t.c||''):'—'}</td></tr>`).join('')}
-let pctSel=0;document.querySelectorAll('.pct').forEach(b=>b.onclick=()=>{pctSel=+b.dataset.p;$('amt').value=(S.usd*cur().r*pctSel/100).toFixed(2);$('msg').textContent=`${pctSel}% elegido: al comprar usa ${pctSel}% de tu saldo; al vender, ${pctSel}% de tu BTC.`});
-$('amt').oninput=()=>pctSel=0;
-function trade(buy){if(!price)return msg('Esperando precio…');const r=cur().r,p=price;let o;
-if(buy){let u=pctSel?S.usd*pctSel/100:(+$('amt').value)/r;if(!(u>0)||u>S.usd+1e-9)return msg('Monto no válido o saldo insuficiente.');u=Math.min(u,S.usd);const f=u*FEE,b=(u-f)/p;
-o={buy:1,p,u,f,b,rows:[['Pagas',fm(u)],['Comisión (0.1%)','−'+fm(f)],['Neto invertido',fm(u-f)],['Recibes',b.toFixed(6)+' BTC']]}}
-else{let b=pctSel?S.btc*pctSel/100:(+$('amt').value)/r/p;if(!(b>0)||b>S.btc*(1+1e-9))return msg('No tienes suficiente BTC.');b=Math.min(b,S.btc);const g=b*p,f=g*FEE;
-o={buy:0,p,b,g,f,rows:[['Vendes',b.toFixed(6)+' BTC'+(pctSel?` (${pctSel}%)`:'')],['Recibes (bruto)',fm(g)],['Comisión (0.1%)','−'+fm(f)],['Neto que recibes',fm(g-f)]]}}
-$('mt').textContent=o.buy?'¿Confirmas la COMPRA?':'¿Confirmas la VENTA?';$('mrows').innerHTML=o.rows.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td></tr>`).join('')+`<tr><td class="mut">Precio BTC</td><td class="mut">${fm(p)}</td></tr>`;
-$('mok').className=o.buy?'buy':'sell';$('mok').textContent=o.buy?'▲ Confirmar compra':'▼ Confirmar venta';$('modal').style.display='flex';pend=o}
-let pend=null;function closeM(){$('modal').style.display='none';pend=null}
-function exec(){const o=pend;closeM();if(!o)return;const now=new Date().toLocaleString('es-PE',{day:'2-digit',month:'2-digit',hour:'numeric',minute:'2-digit',hour12:true});S.fees=(S.fees||0)+o.f;
-if(o.buy){if(o.u>S.usd+1e-9)return msg('Saldo insuficiente.');S.avg=(S.avg*S.btc+o.u)/(S.btc+o.b);S.btc+=o.b;S.usd-=o.u;S.h.push({t:now,k:'Compra',p:o.p,b:o.b,u:o.u,f:o.f,c:S.cur});msg(`Compraste ${o.b.toFixed(6)} BTC (comisión ${fm(o.f)}).`)}
-else{const b=Math.min(o.b,S.btc),net=o.g-o.f,gain=net-S.avg*b;S.btc-=b;S.usd+=net;if(S.btc<1e-10){S.btc=0;S.avg=0}S.h.push({t:now,k:'Venta',p:o.p,b,u:o.g,f:o.f,c:S.cur});msg(`Vendiste ${b.toFixed(6)} BTC. Neto ${fm(net)}: ${gain>=0?'ganaste':'perdiste'} ${fm(Math.abs(gain))} (con comisiones).`)}
-pctSel=0;$('amt').value='';save();ui();draw()}
-function msg(t){$('msg').textContent=t}$('bb').onclick=()=>trade(1);$('mok').onclick=exec;$('mno').onclick=closeM;$('bs').onclick=()=>trade(0);
-$('rkd').ontoggle=()=>{if($('rkd').open)$('rk').click()};$('rk').onclick=async()=>{try{const d=await (await fetch(API+'/ranking')).json();$('rank').innerHTML=d.ranking.map((x,i)=>`<tr><td>${['🥇','🥈','🥉'][i]||i+1}</td><td>${x.display.replace(/</g,'')}</td><td class="${x.pct>=0?'up':'dn'}">${x.pct>=0?'▲ +':'▼ '}${x.pct.toFixed(2)}%</td></tr>`).join('')||'<tr><td class="mut">Nadie todavía</td></tr>'}catch(e){$('rank').innerHTML='<tr><td class="mut">Sin conexión</td></tr>'}};
-setInterval(()=>{if(S&&price)push()},60000);
-const tips=['Antes de comprar, decide: ¿a qué precio venderé si gano? ¿y si pierdo?','Una vela verde = el precio subió en ese tiempo; roja = bajó.','La línea morada punteada es tu precio promedio de compra.','Diversificar y no arriesgar todo es la regla #1.'];let ti=0;setInterval(()=>$('tipx').textContent='📌 '+tips[ti++%tips.length],6000);$('tipx').textContent='📌 '+tips[3];
-setMode(localStorage.getItem('btcsim_dark')==='1');onresize=draw;ui();loadK();conn();
-</script></body></html>
+    <!-- TARJETA DE ACCESO / CREACIÓN DE CUENTA -->
+    <div class="card" id="login">
+      <b>👩‍🎓👨‍🎓 Ingresa con tu nombre</b>
+      <div class="mut">Tu cuenta es permanente y se sincroniza en la nube para que no se pierda nunca.</div>
+      <div class="row" style="margin-top:8px;flex-wrap:nowrap">
+        <input id="nm" placeholder="Escribe tu nombre y apellido" autocomplete="off" style="flex:2">
+        <button class="buy" id="go" style="flex:1">Entrar</button>
+      </div>
+      <div id="profilesWrap" style="display:none;margin-top:8px">
+        <span class="mut">Accesos rápidos en este equipo:</span>
+        <div class="chips" id="profiles"></div>
+      </div>
+      <div id="setup" style="display:none;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">
+        <b>✨ Cuenta nueva: configura tu capital inicial</b>
+        <div class="row" style="margin-top:6px;flex-wrap:nowrap">
+          <select id="cur" style="flex:1">
+            <option value="PEN" selected>Soles (S/)</option>
+            <option value="USD">Dólares ($)</option>
+          </select>
+          <input id="cap" type="number" min="1" max="100000" value="3000" style="flex:1">
+        </div>
+        <div class="mut" id="fxinfo" style="margin-top:4px"></div>
+        <button class="buy" id="create" style="width:100%;margin-top:8px;padding:11px">Crear mi cuenta</button>
+      </div>
+      <div class="mut" id="lmsg" style="margin-top:6px;font-weight:600"></div>
+    </div>
+
+    <!-- RESUMEN DE CARTERA DEL ALUMNO -->
+    <div class="card" id="panel" style="display:none">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <b id="who" style="font-size:15px"></b>
+          <div class="mut" id="sync" style="font-size:11.5px"></div>
+        </div>
+        <button class="tf" id="out">👥 Cambiar alumno</button>
+      </div>
+
+      <!-- Chips rápidos para cambiar de alumno directamente si hay varios en el equipo -->
+      <div class="chips" id="quickSwitch" style="display:none"></div>
+
+      <div class="grid" style="margin-top:8px">
+        <div class="box">
+          <span class="mut">Saldo disponible</span>
+          <b id="usd"></b>
+        </div>
+        <div class="box">
+          <span class="mut">BTC acumulados</span>
+          <b id="btc"></b>
+        </div>
+        <div class="box">
+          <span class="mut">Precio promedio</span>
+          <b id="avg"></b>
+        </div>
+        <div class="box">
+          <span class="mut">Patrimonio total</span>
+          <b id="eq"></b>
+        </div>
+        <div class="box" style="grid-column:span 2">
+          <span class="mut" id="capInfo"></span>
+          <b id="fees"></b>
+        </div>
+      </div>
+      <div id="msg" class="mut" style="margin-top:6px;font-weight:700;color:var(--pri)"></div>
+    </div>
+
+    <!-- SECCIONES PLEGABLES: HISTORIAL, RANKING Y CONSEJOS -->
+    <details id="histDetails">
+      <summary>📜 Historial de operaciones <span id="histTotalFees" class="mut" style="font-weight:600"></span></summary>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Fecha (AM/PM)</th>
+              <th>Precio</th>
+              <th>Cantidad</th>
+              <th>Monto</th>
+              <th>Comisión</th>
+            </tr>
+          </thead>
+          <tbody id="hist">
+            <tr><td colspan="6" class="mut">Aún no hay operaciones registradas.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details id="rkd">
+      <summary>🏆 Ranking de la clase (% de ganancia)</summary>
+      <div class="row" style="justify-content:space-between;margin:6px 0">
+        <span class="mut">Ordenado por % de ganancia neta (incluye comisiones)</span>
+        <button class="tf" id="rk">🔄 Actualizar</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Alumno</th>
+            <th>Ganancia / Pérdida (%)</th>
+          </tr>
+        </thead>
+        <tbody id="rank">
+          <tr><td colspan="3" class="mut">Abre o toca Actualizar para ver el ranking.</td></tr>
+        </tbody>
+      </table>
+    </details>
+
+    <details class="tip">
+      <summary>💡 Consejos de inversión responsable</summary>
+      <p id="tipx" style="font-weight:700;color:var(--pri);margin:8px 0 4px"></p>
+      <ul>
+        <li><b>¿Cuándo comprar o vender?</b> Compra cuando el precio haya tenido una corrección (bajada) y tengas un plan claro, nunca por impulso o miedo a quedarte fuera. Vende cuando alcances tu meta de ganancia.</li>
+        <li><b>Gestión del riesgo:</b> Nunca arriesgues el 100% de tu saldo en una sola compra. Divide tu capital usando los botones de <b>25%</b> o <b>50%</b> para promediar tu precio de entrada.</li>
+        <li><b>Usa un Stop-Loss (límite de pérdida):</b> Antes de comprar, decide cuál es la pérdida máxima que aceptarás (por ejemplo, 3% o 5%). Si el mercado cae hasta ese punto, vende para proteger el resto de tu capital.</li>
+        <li><b>No invertir lo que no puedes perder:</b> En la vida real, jamás se debe invertir el dinero destinado a estudios, alimentación, salud o ahorros de emergencia familiar.</li>
+        <li><b>Cuida las comisiones (0.1%):</b> Cada compra y cada venta descuenta una comisión de 0.1%. Hacer demasiadas operaciones seguidas sin estrategia reducirá tu patrimonio.</li>
+      </ul>
+    </details>
+
+    <p class="mut" style="text-align:center;padding:8px 12px 14px">
+      Simulador Bitcoin Educativo · Educación para el Trabajo (Secundaria – Perú) · Dinero de DEMOSTRACIÓN, no es real
+    </p>
+  </div>
+
+  <!-- HOJA DE CONFIRMACIÓN DE COMPRA / VENTA -->
+  <div id="modal" class="modal-backdrop">
+    <div class="sheet">
+      <b id="mt" style="font-size:17px"></b>
+      <table style="margin:8px 0" id="mrows"></table>
+      <div class="row" style="flex-wrap:nowrap;margin-top:10px">
+        <button class="tf" id="mno" style="flex:1;padding:12px">Cancelar</button>
+        <button id="mok" style="flex:2;padding:12px"></button>
+      </div>
+      <div class="mut" style="margin-top:6px;text-align:center">
+        Comisión estándar spot de 0.1% incluida en tu ganancia/pérdida.
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CÓDIGO QR PARA COMPARTIR CON LOS ALUMNOS -->
+  <div id="qrModal" class="modal-backdrop">
+    <div class="sheet" style="text-align:center">
+      <b style="font-size:17px">📲 Escanea para abrir Simulador Bitcoin</b>
+      <div class="mut" style="margin:4px 0 10px">Comparte este código QR con tus compañeros de clase</div>
+      <div style="background:#fff;display:inline-block;padding:12px;border-radius:16px;border:2px solid var(--line)">
+        <img id="qrImg" alt="Código QR Simulador Bitcoin" width="210" height="210" style="display:block">
+      </div>
+      <div id="qrUrlText" class="mut" style="margin:8px 0;font-weight:700;word-break:break-all"></div>
+      <button class="buy" id="qrClose" style="width:100%;padding:11px;margin-top:6px">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- BARRA FIJA INFERIOR DE COMPRA Y VENTA -->
+  <div class="bar" id="bar" style="display:none">
+    <div class="in">
+      <div class="row" style="gap:6px">
+        <input id="amt" type="number" min="0" step="any" placeholder="Monto" style="flex:2.1">
+        <button class="pct" data-p="25">25%</button>
+        <button class="pct" data-p="50">50%</button>
+        <button class="pct" data-p="100">100%</button>
+      </div>
+      <div class="row" style="margin-top:6px;gap:8px">
+        <button class="buy" id="bb" style="flex:1;padding:11px">▲ Comprar</button>
+        <button class="sell" id="bs" style="flex:1;padding:11px">▼ Vender</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://simulador-btc-api.educaredmovil.workers.dev';
+    const PUBLIC_URL = 'https://juanjosederecho.github.io/simulador-bitcoin/';
+    const $ = id => document.getElementById(id);
+
+    // Normalización del nombre: sin mayúsculas, sin tildes ni espacios extra
+    const norm = n => (n || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, ' ');
+
+    const LS = k => 'btcsim2_' + k;
+    const FEE = 0.001; // 0.1% por cada compra y cada venta
+
+    let S = null;
+    let price = 0;
+    let open24 = 0;
+    let tf = localStorage.getItem('btcsim_tf') || '1m';
+    let candles = [];
+    let ws = null;
+    let lastWs = 0;
+    let fxLive = 3.75; // Respaldo USD/PEN = 3.75
+    let pctSel = 0;
+    let pend = null;
+    let syncTimer = null;
+
+    const cur = () => S
+      ? (S.cur === 'PEN' ? { s: 'S/ ', r: S.fx || 3.75, code: 'PEN' } : { s: '$ ', r: 1, code: 'USD' })
+      : { s: 'S/ ', r: fxLive, code: 'PEN' };
+
+    const fm = (usd, c = cur()) =>
+      c.s + ((+usd || 0) * c.r).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const REST_HOSTS = [
+      'https://data-api.binance.vision',
+      'https://api.binance.com'
+    ];
+
+    async function rest(path) {
+      for (const host of REST_HOSTS) {
+        try {
+          const r = await fetch(host + path, { cache: 'no-store' });
+          if (r.ok) return await r.json();
+        } catch (_) {}
+      }
+      throw new Error('REST no disponible');
+    }
+
+    // Modo claro / oscuro con persistencia
+    function setMode(dark) {
+      document.body.classList.toggle('dark', dark);
+      $('mode').textContent = dark ? '☀️' : '🌙';
+      localStorage.setItem('btcsim_dark', dark ? '1' : '0');
+      draw();
+    }
+    $('mode').onclick = () => setMode(!document.body.classList.contains('dark'));
+
+    // Modal QR
+    $('qrBtn').onclick = () => {
+      const targetUrl = location.href.startsWith('http') ? location.href.split('#')[0] : PUBLIC_URL;
+      $('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(targetUrl);
+      $('qrUrlText').textContent = targetUrl;
+      $('qrModal').style.display = 'flex';
+    };
+    $('qrClose').onclick = () => { $('qrModal').style.display = 'none'; };
+    $('qrModal').onclick = e => { if (e.target === $('qrModal')) $('qrModal').style.display = 'none'; };
+
+    // Tipo de cambio USD/PEN en vivo con respaldo 3.75
+    fetch('https://open.er-api.com/v6/latest/USD')
+      .then(r => r.json())
+      .then(d => {
+        if (d && d.rates && d.rates.PEN) fxLive = +d.rates.PEN;
+        fxInfo();
+        if (price && !S) setP(price, $('src').textContent);
+        draw();
+      })
+      .catch(fxInfo);
+
+    function fxInfo() {
+      const isPen = $('cur').value === 'PEN';
+      $('fxinfo').textContent = isPen
+        ? `Tipo de cambio fijado al crear: 1 USD = S/ ${fxLive.toFixed(3)} (respaldo 3.75). Capital máx: S/ 100,000.`
+        : 'Moneda en Dólares ($). Capital máximo: $ 100,000.';
+    }
+    $('cur').onchange = () => {
+      if ($('cur').value === 'PEN' && +$('cap').value === 1000) $('cap').value = 3000;
+      fxInfo();
+    };
+
+    // Botones de temporalidades: 1m, 5m, 15m, 1h, 4h, 1d
+    ['1m', '5m', '15m', '1h', '4h', '1d'].forEach(t => {
+      const b = document.createElement('button');
+      b.className = 'tf' + (t === tf ? ' on' : '');
+      b.textContent = t;
+      b.dataset.tf = t;
+      b.onclick = () => {
+        document.querySelectorAll('[data-tf]').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        tf = t;
+        localStorage.setItem('btcsim_tf', t);
+        loadK();
+        conn();
+      };
+      $('tfs').appendChild(b);
+    });
+
+    async function loadK() {
+      try {
+        const d = await rest(`/api/v3/uiKlines?symbol=BTCUSDT&interval=${tf}&limit=64`);
+        candles = d.map(k => ({ t: k[0], o: +k[1], h: +k[2], l: +k[3], c: +k[4] }));
+        if (candles.length && !price) {
+          setP(candles[candles.length - 1].c, 'en vivo');
+        }
+        draw();
+      } catch (_) {}
+    }
+
+    async function loadInitialTicker() {
+      try {
+        const d = await rest('/api/v3/ticker/24hr?symbol=BTCUSDT');
+        open24 = +d.openPrice;
+        if (!price) setP(+d.lastPrice, 'en vivo');
+      } catch (_) {}
+    }
+
+    // WebSocket público wss://data-stream.binance.vision/stream suscrito a btcusdt@aggTrade, btcusdt@ticker y btcusdt@kline_{intervalo}
+    function conn() {
+      if (ws) {
+        ws.onclose = null;
+        try { ws.close(); } catch (_) {}
+      }
+      const streamPath = `wss://data-stream.binance.vision/stream?streams=btcusdt@aggTrade/btcusdt@ticker/btcusdt@kline_${tf}`;
+      ws = new WebSocket(streamPath);
+      ws.onopen = () => {
+        try {
+          ws.send(JSON.stringify({
+            method: 'SUBSCRIBE',
+            params: ['btcusdt@aggTrade', 'btcusdt@ticker', `btcusdt@kline_${tf}`],
+            id: 1
+          }));
+        } catch (_) {}
+      };
+      ws.onmessage = e => {
+        const msg = JSON.parse(e.data);
+        const d = msg.data || msg;
+        if (!d || !d.e) return;
+        lastWs = Date.now();
+        if (d.e === 'aggTrade') {
+          setP(+d.p, 'en vivo');
+        } else if (d.e === 'kline') {
+          const k = d.k;
+          const c = { t: k.t, o: +k.o, h: +k.h, l: +k.l, c: +k.c };
+          const L = candles[candles.length - 1];
+          if (L && L.t === c.t) candles[candles.length - 1] = c;
+          else {
+            candles.push(c);
+            if (candles.length > 64) candles.shift();
+          }
+          setP(c.c, 'en vivo');
+          draw();
+        } else if (d.e === '24hrTicker') {
+          open24 = +d.o;
+          if (+d.c > 0) setP(+d.c, 'en vivo');
+        }
+      };
+      ws.onclose = () => setTimeout(conn, 3000);
+    }
+
+    // Respaldo REST: si no llegan mensajes en 5 s, consultar REST cada 3 s
+    setInterval(async () => {
+      if (Date.now() - lastWs > 5000) {
+        try {
+          const d = await rest('/api/v3/ticker/24hr?symbol=BTCUSDT');
+          open24 = +d.openPrice;
+          setP(+d.lastPrice, 'respaldo REST');
+          const L = candles[candles.length - 1];
+          if (L) {
+            L.c = price;
+            L.h = Math.max(L.h, price);
+            L.l = Math.min(L.l, price);
+            draw();
+          }
+        } catch (_) {
+          $('src').textContent = 'sin conexión';
+          $('dot').style.background = '#e04456';
+        }
+      }
+    }, 3000);
+
+    let prev = 0;
+    function setP(p, src) {
+      if (!p || isNaN(p)) return;
+      prev = price || p;
+      price = p;
+      const el = $('price');
+      el.textContent = fm(p);
+      el.className = 'price ' + (p >= prev ? 'up' : 'dn');
+      $('src').textContent = src;
+      $('dot').style.background = src === 'en vivo' ? '#1b9e5e' : '#f59e0b';
+      if (open24 > 0) {
+        const c = ((p - open24) / open24) * 100;
+        $('chg').innerHTML = `<span class="${c >= 0 ? 'up' : 'dn'}">${c >= 0 ? '▲ +' : '▼ '}${c.toFixed(2)}% (24h)</span>`;
+      }
+      ui();
+    }
+
+    // Dibujo del gráfico de velas japonesas + línea punteada con el precio promedio de compra
+    function draw() {
+      const cv = $('cv');
+      const r = window.devicePixelRatio || 1;
+      const W = cv.clientWidth || 340;
+      const H = cv.clientHeight || 220;
+      cv.width = W * r;
+      cv.height = H * r;
+      const g = cv.getContext('2d');
+      g.scale(r, r);
+      if (!candles.length) return;
+
+      const dk = document.body.classList.contains('dark');
+      const cr = cur().r;
+      let hi = Math.max(...candles.map(c => c.h));
+      let lo = Math.min(...candles.map(c => c.l));
+
+      // Si el alumno tiene BTC y su precio promedio está cerca del rango, incluirlo para que se vea en escala
+      const hasAvg = S && S.btc > 0 && S.avg > 0;
+      if (hasAvg) {
+        const span = (hi - lo) || hi * 0.01;
+        if (S.avg <= hi + span * 2.5 && S.avg >= lo - span * 2.5) {
+          hi = Math.max(hi, S.avg);
+          lo = Math.min(lo, S.avg);
+        }
+        $('avgLegend').textContent = `┄ Promedio: ${fm(S.avg)}`;
+      } else {
+        $('avgLegend').textContent = '';
+      }
+
+      const pad = 68;
+      const y = v => 10 + ((hi - v) / ((hi - lo) || 1)) * (H - 20);
+      const w = (W - pad) / candles.length;
+
+      g.font = '10px system-ui, sans-serif';
+      for (let i = 0; i <= 4; i++) {
+        const v = lo + ((hi - lo) * i) / 4;
+        const py = y(v);
+        g.fillStyle = dk ? '#a39fc2' : '#757196';
+        g.fillText(Math.round(v * cr).toLocaleString('en-US'), W - pad + 5, py + 3);
+        g.strokeStyle = dk ? '#35334d' : '#eae8f5';
+        g.beginPath();
+        g.moveTo(0, py);
+        g.lineTo(W - pad, py);
+        g.stroke();
+      }
+
+      candles.forEach((c, i) => {
+        const x = i * w + w / 2;
+        const isUp = c.c >= c.o;
+        const col = isUp ? (dk ? '#3ee08e' : '#1b9e5e') : (dk ? '#ff6e7f' : '#e04456');
+        g.strokeStyle = col;
+        g.fillStyle = col;
+        g.beginPath();
+        g.moveTo(x, y(c.h));
+        g.lineTo(x, y(c.l));
+        g.stroke();
+        const topY = Math.min(y(c.o), y(c.c));
+        const bodyH = Math.max(1.5, Math.abs(y(c.o) - y(c.c)));
+        g.fillRect(x - w * 0.34, topY, Math.max(2, w * 0.68), bodyH);
+      });
+
+      // Línea punteada horizontal con el precio promedio de compra del alumno
+      if (hasAvg) {
+        const rawY = y(S.avg);
+        const clampedY = Math.max(10, Math.min(H - 10, rawY));
+        g.save();
+        g.strokeStyle = '#8b7cf6';
+        g.lineWidth = 1.8;
+        g.setLineDash([5, 4]);
+        g.beginPath();
+        g.moveTo(0, clampedY);
+        g.lineTo(W - pad, clampedY);
+        g.stroke();
+        g.setLineDash([]);
+
+        // Etiqueta sobre la línea punteada
+        const lbl = `Promedio: ${fm(S.avg)}`;
+        const tw = g.measureText(lbl).width + 10;
+        const ly = Math.max(12, Math.min(H - 18, clampedY - 9));
+        g.fillStyle = '#8b7cf6';
+        g.fillRect(4, ly, tw, 16);
+        g.fillStyle = '#ffffff';
+        g.font = 'bold 10px system-ui, sans-serif';
+        g.fillText(lbl, 9, ly + 11);
+        g.restore();
+      }
+    }
+
+    // Gestión de perfiles usados en este equipo
+    function profiles() {
+      try {
+        return JSON.parse(localStorage.getItem(LS('profiles')) || '[]');
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function showProfiles() {
+      const list = profiles();
+      $('profilesWrap').style.display = list.length ? '' : 'none';
+      $('profiles').innerHTML = list
+        .map(p => `<button type="button" data-n="${p.replace(/"/g, '&quot;')}">👤 ${p}</button>`)
+        .join('');
+      $('profiles').querySelectorAll('button').forEach(b => {
+        b.onclick = () => {
+          $('nm').value = b.dataset.n;
+          enter();
+        };
+      });
+
+      // También actualizar accesos rápidos dentro del panel activo
+      const others = S ? list.filter(x => norm(x) !== norm(S.name)) : [];
+      const qs = $('quickSwitch');
+      if (others.length) {
+        qs.style.display = 'flex';
+        qs.innerHTML = others
+          .map(p => `<button type="button" data-n="${p.replace(/"/g, '&quot;')}">⇄ ${p}</button>`)
+          .join('');
+        qs.querySelectorAll('button').forEach(b => {
+          b.onclick = () => {
+            $('nm').value = b.dataset.n;
+            enter();
+          };
+        });
+      } else {
+        qs.style.display = 'none';
+      }
+    }
+
+    // Guardado permanente en localStorage + Cloudflare Worker D1
+    function save() {
+      if (!S) return;
+      S.updated = Date.now();
+      const k = norm(S.name);
+      localStorage.setItem(LS('acc_' + k), JSON.stringify(S));
+      const p = profiles().filter(x => norm(x) !== k);
+      p.unshift(S.name);
+      localStorage.setItem(LS('profiles'), JSON.stringify(p.slice(0, 15)));
+      localStorage.setItem(LS('last_user'), S.name);
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(push, 450);
+    }
+
+    async function push() {
+      if (!S) return;
+      const k = norm(S.name);
+      const eq = S.usd + S.btc * (price || S.avg || 0);
+      const pct = S.start > 0 ? ((eq - S.start) / S.start) * 100 : 0;
+      try {
+        // Primero verificar si en la nube hay una copia más reciente
+        const getRes = await fetch(API + '/account?name=' + encodeURIComponent(k), { cache: 'no-store' });
+        if (getRes.ok) {
+          const cloudObj = (await getRes.json()).account;
+          if (cloudObj && (cloudObj.updated || 0) > (S.updated || 0)) {
+            S = cloudObj;
+            localStorage.setItem(LS('acc_' + k), JSON.stringify(S));
+            $('sync').textContent = '☁️ Sincronizado con la nube';
+            ui();
+            draw();
+            return;
+          }
+        }
+        const r = await fetch(API + '/account', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: S.name, data: S, pct })
+        });
+        $('sync').textContent = r.ok ? '☁️ Guardado en la nube' : '💾 Guardado solo en este equipo';
+      } catch (_) {
+        $('sync').textContent = '💾 Guardado solo en este equipo';
+      }
+    }
+
+    window.addEventListener('online', () => {
+      if (S) push();
+    });
+
+    async function enter() {
+      const rawName = $('nm').value.trim();
+      const k = norm(rawName);
+      if (!k) {
+        $('lmsg').textContent = 'Por favor, escribe tu nombre para entrar.';
+        return;
+      }
+      $('lmsg').textContent = 'Buscando tu cuenta…';
+      let cloud = null;
+      let cloudReachable = false;
+      try {
+        const r = await fetch(API + '/account?name=' + encodeURIComponent(k), { cache: 'no-store' });
+        if (r.ok) {
+          const j = await r.json();
+          cloud = j.account || null;
+          cloudReachable = true;
+        }
+      } catch (_) {}
+
+      const local = JSON.parse(localStorage.getItem(LS('acc_' + k)) || 'null');
+      let chosen = null;
+      if (cloud && local) {
+        chosen = (local.updated || 0) >= (cloud.updated || 0) ? local : cloud;
+      } else {
+        chosen = cloud || local;
+      }
+
+      if (chosen) {
+        S = chosen;
+        S.name = k; // Nombre normalizado
+        S.fees = +S.fees || 0;
+        S.h = Array.isArray(S.h) ? S.h : [];
+        $('setup').style.display = 'none';
+        $('lmsg').textContent = '';
+        save();
+        ui();
+        draw();
+      } else {
+        $('setup').style.display = '';
+        $('lmsg').textContent = (cloudReachable ? '' : '(Modo local: Guardado solo en este equipo) ') +
+          `Hola "${k}", aún no tienes cuenta. Elige tu moneda y capital inicial:`;
+        fxInfo();
+      }
+    }
+
+    $('go').onclick = enter;
+    $('nm').onkeydown = e => { if (e.key === 'Enter') enter(); };
+
+    $('create').onclick = () => {
+      const k = norm($('nm').value);
+      if (!k) return;
+      const c = $('cur').value === 'USD' ? 'USD' : 'PEN';
+      const capInput = Math.min(100000, Math.max(1, +$('cap').value || 3000));
+      const fx = c === 'PEN' ? fxLive : 1;
+      const startUsd = capInput / fx;
+
+      S = {
+        name: k,
+        cur: c,
+        fx: fx,
+        initialCapital: capInput,
+        start: startUsd,
+        usd: startUsd,
+        btc: 0,
+        avg: 0,
+        fees: 0,
+        h: [],
+        created: Date.now(),
+        updated: Date.now()
+      };
+      $('setup').style.display = 'none';
+      $('lmsg').textContent = '';
+      save();
+      ui();
+      draw();
+    };
+
+    $('out').onclick = () => {
+      S = null;
+      localStorage.removeItem(LS('last_user'));
+      $('nm').value = '';
+      $('setup').style.display = 'none';
+      $('lmsg').textContent = '';
+      ui();
+      draw();
+    };
+
+    function formatAmPm(dateObj) {
+      return dateObj.toLocaleString('es-PE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
+
+    function ui() {
+      if (!S) {
+        $('login').style.display = '';
+        $('panel').style.display = 'none';
+        $('bar').style.display = 'none';
+        $('banwrap').style.display = 'none';
+        showProfiles();
+        $('hist').innerHTML = '<tr><td colspan="6" class="mut">Inicia sesión para ver tu historial.</td></tr>';
+        $('histTotalFees').textContent = '';
+        return;
+      }
+
+      $('login').style.display = 'none';
+      $('panel').style.display = '';
+      $('bar').style.display = '';
+      $('banwrap').style.display = '';
+      showProfiles();
+
+      const c = cur();
+      const normalizedName = norm(S.name);
+      $('who').textContent = `👤 Alumno: ${normalizedName} (${c.code})`;
+      $('usd').textContent = fm(S.usd);
+      $('btc').textContent = (S.btc || 0).toFixed(6) + ' BTC';
+      $('avg').textContent = S.btc > 0 ? fm(S.avg) : '—';
+      $('amt').placeholder = `Monto en ${c.s.trim()}`;
+
+      // Patrimonio actual e impacto de comisiones
+      const effPrice = price || S.avg || 0;
+      const eqUsd = S.usd + S.btc * effPrice;
+      const diffUsd = eqUsd - S.start;
+      const diffPct = S.start > 0 ? (diffUsd / S.start) * 100 : 0;
+
+      $('eq').textContent = fm(eqUsd);
+      $('capInfo').textContent = `Capital inicial: ${fm(S.start)} (${c.code === 'PEN' ? 'T.C. fijo S/ ' + (S.fx || 3.75).toFixed(2) : 'USD'}) · Comisiones totales pagadas:`;
+      $('fees').textContent = fm(S.fees || 0);
+      $('histTotalFees').textContent = `· Total comisiones: ${fm(S.fees || 0)}`;
+
+      // Banner grande: Ganando (🐂), Perdiendo (🐻) o Empate
+      const b = $('ban');
+      const bg = $('big');
+      const an = $('animal');
+      an.className = 'animal';
+      an.textContent = '';
+
+      const threshold = S.start * 1e-5;
+      if (!effPrice || Math.abs(diffUsd) <= threshold) {
+        b.className = 'banner flat';
+        b.textContent = 'Estás en EMPATE';
+        bg.innerHTML = `<span class="mut">${fm(0)} (0.00%)</span>`;
+      } else if (diffUsd > threshold) {
+        b.className = 'banner win';
+        b.textContent = '🚀 ¡Estás GANANDO!';
+        an.className = 'animal win';
+        an.textContent = '🐂';
+        an.title = 'Toro alcista: estás ganando';
+        bg.innerHTML = `<span class="up">▲ +${fm(diffUsd)} (+${diffPct.toFixed(2)}%)</span>`;
+      } else {
+        b.className = 'banner lose';
+        b.textContent = '📉 Estás PERDIENDO';
+        an.className = 'animal lose';
+        an.textContent = '🐻';
+        an.title = 'Oso bajista: estás perdiendo';
+        bg.innerHTML = `<span class="dn">▼ −${fm(Math.abs(diffUsd))} (${diffPct.toFixed(2)}%)</span>`;
+      }
+
+      // Historial de operaciones con columna Comisión
+      if (!S.h || !S.h.length) {
+        $('hist').innerHTML = '<tr><td colspan="6" class="mut">Aún no realizas compras ni ventas.</td></tr>';
+      } else {
+        $('hist').innerHTML = S.h
+          .slice()
+          .reverse()
+          .map(t => `
+            <tr>
+              <td class="${t.k === 'Compra' ? 'up' : 'dn'}" style="font-weight:700">${t.k}</td>
+              <td>${t.t}</td>
+              <td>${fm(t.p)}</td>
+              <td>${(+t.b).toFixed(6)} BTC</td>
+              <td>${fm(t.u)}</td>
+              <td>${fm(t.f || 0)}</td>
+            </tr>
+          `)
+          .join('');
+      }
+    }
+
+    // Botones de porcentaje 25%, 50%, 100%
+    document.querySelectorAll('.pct').forEach(b => {
+      b.onclick = () => {
+        if (!S) return;
+        pctSel = +b.dataset.p;
+        document.querySelectorAll('.pct').forEach(x => x.classList.toggle('on', x === b));
+        const r = cur().r;
+        if (S.usd > 1e-4) {
+          $('amt').value = (S.usd * r * pctSel / 100).toFixed(2);
+        } else if (S.btc > 0 && price > 0) {
+          $('amt').value = (S.btc * price * r * pctSel / 100).toFixed(2);
+        }
+        msg(`Seleccionado ${pctSel}%: al Comprar usa ${pctSel}% de tu saldo; al Vender usa ${pctSel}% de tus BTC.`);
+      };
+    });
+
+    $('amt').oninput = () => {
+      pctSel = 0;
+      document.querySelectorAll('.pct').forEach(x => x.classList.remove('on'));
+    };
+
+    // Preparar hoja de confirmación de Compra o Venta
+    function trade(isBuy) {
+      if (!S) return;
+      if (!price) return msg('Esperando precio en vivo…');
+      const r = cur().r;
+      const p = price;
+      let order = null;
+
+      if (isBuy) {
+        let u = pctSel ? (S.usd * pctSel) / 100 : (+$('amt').value || 0) / r;
+        if (!(u > 0) || u > S.usd + 1e-7) {
+          return msg('Monto no válido o saldo insuficiente para comprar.');
+        }
+        u = Math.min(u, S.usd);
+        const f = u * FEE;
+        const net = u - f;
+        const b = net / p;
+        order = {
+          buy: true,
+          p,
+          u,
+          f,
+          net,
+          b,
+          rows: [
+            ['Pagas', fm(u)],
+            ['Comisión (0.1%)', fm(f)],
+            ['Neto invertido', fm(net)],
+            ['BTC recibido', b.toFixed(6) + ' BTC']
+          ]
+        };
+      } else {
+        let b = pctSel ? (S.btc * pctSel) / 100 : ((+$('amt').value || 0) / r) / p;
+        if (!(b > 0) || b > S.btc * (1 + 1e-7)) {
+          return msg('No tienes suficiente BTC para vender ese monto.');
+        }
+        b = Math.min(b, S.btc);
+        const gross = b * p;
+        const f = gross * FEE;
+        const net = gross - f;
+        order = {
+          buy: false,
+          p,
+          b,
+          g: gross,
+          f,
+          net,
+          rows: [
+            ['BTC vendido', b.toFixed(6) + ' BTC' + (pctSel ? ` (${pctSel}%)` : '')],
+            ['Recibes (bruto)', fm(gross)],
+            ['Comisión (0.1%)', fm(f)],
+            ['Neto que recibes', fm(net)]
+          ]
+        };
+      }
+
+      $('mt').textContent = order.buy ? '▲ Confirmar orden de COMPRA' : '▼ Confirmar orden de VENTA';
+      $('mrows').innerHTML =
+        order.rows.map(x => `<tr><td>${x[0]}</td><td>${x[1]}</td></tr>`).join('') +
+        `<tr><td class="mut">Precio actual BTC</td><td class="mut">${fm(p)}</td></tr>`;
+      $('mok').className = order.buy ? 'buy' : 'sell';
+      $('mok').textContent = order.buy ? '▲ Confirmar Compra' : '▼ Confirmar Venta';
+      $('modal').style.display = 'flex';
+      pend = order;
+    }
+
+    function closeM() {
+      $('modal').style.display = 'none';
+      pend = null;
+    }
+
+    function exec() {
+      const o = pend;
+      closeM();
+      if (!o || !S) return;
+      const now = formatAmPm(new Date());
+      S.fees = (S.fees || 0) + o.f;
+
+      if (o.buy) {
+        if (o.u > S.usd + 1e-7) return msg('Saldo insuficiente.');
+        // El costo total desembolsado actualiza el precio promedio ponderado
+        S.avg = (S.avg * S.btc + o.u) / (S.btc + o.b);
+        S.btc += o.b;
+        S.usd = Math.max(0, S.usd - o.u);
+        S.h.push({ t: now, k: 'Compra', p: o.p, b: o.b, u: o.u, f: o.f, c: S.cur });
+        msg(`✅ Compraste ${o.b.toFixed(6)} BTC (Comisión: ${fm(o.f)}).`);
+      } else {
+        const b = Math.min(o.b, S.btc);
+        const net = o.g - o.f;
+        S.btc = Math.max(0, S.btc - b);
+        S.usd += net;
+        if (S.btc < 1e-10) {
+          S.btc = 0;
+          S.avg = 0;
+        }
+        S.h.push({ t: now, k: 'Venta', p: o.p, b: b, u: o.g, f: o.f, c: S.cur });
+        msg(`✅ Vendiste ${b.toFixed(6)} BTC y recibiste neto ${fm(net)} (Comisión: ${fm(o.f)}).`);
+      }
+
+      pctSel = 0;
+      document.querySelectorAll('.pct').forEach(x => x.classList.remove('on'));
+      $('amt').value = '';
+      save();
+      ui();
+      draw();
+    }
+
+    function msg(t) { $('msg').textContent = t; }
+    $('bb').onclick = () => trade(true);
+    $('bs').onclick = () => trade(false);
+    $('mok').onclick = exec;
+    $('mno').onclick = closeM;
+    $('modal').onclick = e => { if (e.target === $('modal')) closeM(); };
+
+    // Ranking de la clase ordenado por % de ganancia
+    async function loadRanking() {
+      try {
+        const d = await (await fetch(API + '/ranking', { cache: 'no-store' })).json();
+        const rows = (d.ranking || []).slice().sort((a, b) => (+b.pct || 0) - (+a.pct || 0));
+        if (!rows.length) {
+          $('rank').innerHTML = '<tr><td colspan="3" class="mut">Aún no hay alumnos registrados.</td></tr>';
+          return;
+        }
+        $('rank').innerHTML = rows
+          .map((x, i) => {
+            const medal = ['🥇', '🥈', '🥉'][i] || `${i + 1}.`;
+            const pctVal = +x.pct || 0;
+            const safeName = String(x.display || '').replace(/[<>&"]/g, '');
+            return `
+              <tr>
+                <td><b>${medal}</b></td>
+                <td>${safeName}</td>
+                <td class="${pctVal >= 0 ? 'up' : 'dn'}" style="font-weight:800">
+                  ${pctVal >= 0 ? '▲ +' : '▼ '}${pctVal.toFixed(2)}%
+                </td>
+              </tr>
+            `;
+          })
+          .join('');
+      } catch (_) {
+        $('rank').innerHTML = '<tr><td colspan="3" class="mut">Sin conexión al servidor de ranking.</td></tr>';
+      }
+    }
+
+    $('rkd').ontoggle = () => { if ($('rkd').open) loadRanking(); };
+    $('rk').onclick = loadRanking;
+
+    setInterval(() => { if (S && price) push(); }, 45000);
+
+    const tips = [
+      'Regla de oro: nunca inviertas dinero que no puedas permitirte perder.',
+      'Antes de comprar, define tu Stop-Loss (límite de pérdida) y tu meta de ganancia.',
+      'La línea punteada morada en el gráfico marca tu precio promedio de compra.',
+      'Cada operación cobra 0.1% de comisión: opera con estrategia, no por impulso.'
+    ];
+    let ti = 0;
+    setInterval(() => { $('tipx').textContent = '📌 ' + tips[ti++ % tips.length]; }, 5500);
+    $('tipx').textContent = '📌 ' + tips[0];
+
+    // Inicialización
+    setMode(localStorage.getItem('btcsim_dark') === '1');
+    window.addEventListener('resize', draw);
+    const savedLast = localStorage.getItem(LS('last_user'));
+    if (savedLast) {
+      $('nm').value = savedLast;
+      enter();
+    } else {
+      ui();
+    }
+    loadInitialTicker();
+    loadK();
+    conn();
+  </script>
+</body>
+</html>
